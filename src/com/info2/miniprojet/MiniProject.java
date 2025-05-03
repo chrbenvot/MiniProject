@@ -13,13 +13,15 @@ import java.io.FileOutputStream;
 import com.info2.miniprojet.cli.CliHandler;
 import com.info2.miniprojet.config.Configuration;
 import com.info2.miniprojet.core.Engine;
+import com.info2.miniprojet.core.Name;
+import com.info2.miniprojet.factory.StrategyFactory;
 
 
 public class MiniProject {
     private CliHandler cliHandler;
     private Engine engine;
     private Configuration currentConfig; // Non-static
-    private final String configFilePath; // Final after constructor
+    private final String configFilePath;// Final after constructor
 
     // Constructor: Initializes components and loads config
     public MiniProject() {

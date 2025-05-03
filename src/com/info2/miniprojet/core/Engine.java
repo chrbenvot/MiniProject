@@ -14,10 +14,6 @@ import java.util.List;
 
 public class Engine {
 
-    private final StrategyFactory strategyFactory;
-    public Engine(StrategyFactory factory){
-        this.strategyFactory = factory;
-    }
 
     public List<ComparisonResult> performSearch(Name queryName, List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Search for '" + queryName + "'...");
@@ -34,13 +30,13 @@ public class Engine {
             // Preprocess the query
             // For skeleton, assume simple tokenization if needed or that preprocessor handles it
             System.out.println("Engine: Preprocessing query...");
-            List<String> queryTokens = preprocessor.preprocess(List.of(queryName)); // Wrap query in list
+            List<String> queryTokens = preprocessor.preprocess(List.of(queryName.orignalName())); // Wrap query in list
 
             // Preprocess the data list
             System.out.println("Engine: Preprocessing data list (" + namesList.size() + " entries)...");
             List<List<String>> processedNameTokensList = new ArrayList<>(namesList.size());
-            for (String name : namesList) {
-                processedNameTokensList.add(preprocessor.preprocess(List.of(name))); // Wrap name in list
+            for (Name name : namesList) {
+                processedNameTokensList.add(preprocessor.preprocess(List.of(name.orignalName()))); // TODO: Wrap each name in a list?
             }
 
             // Build the index
@@ -51,7 +47,7 @@ public class Engine {
             System.out.println("Engine: Finding candidates...");
             // Pass index Object, query tokens. CandidateFinder might need original list size.
             // Adjust ReturnAllCandidateFinder if it needs the size.
-            List<Integer> candidateIndices = candidateFinder.findCandidates(queryTokens, index);
+            List<Integer> candidateIndices = candidateFinder.findCandidates(queryName,queryTokens, index);
             System.out.println("Engine: Found " + candidateIndices.size() + " candidate indices.");
 
             // Compare candidates
