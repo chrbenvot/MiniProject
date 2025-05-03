@@ -1,16 +1,20 @@
 package com.info2.miniprojet.indexing;
 
+import com.info2.miniprojet.core.Couple;
+import com.info2.miniprojet.core.Name;
+
 import java.util.List;
 
 public interface CandidateFinder {
     /**
      * Finds potential candidate indices from the original list based on the query and a pre-built index.
-     * @param processedQueryTokens The processed tokens of the query name.
+     * @param queryName the query name.
+     * @param namesList the original list of names.
      * @param indexStructure The opaque index object created by a compatible IndexBuilder.
      * @return A list of integer indices corresponding to potential matches in the original list.
      */
-    List<Integer> findCandidates(List<String> processedQueryTokens, Object indexStructure); // IS INDEX NECESSARY??,also is it always better
-                                                                                            // to only give indexes instead of list of names
+    List<Couple<Name>> findCandidates(Name queryName, List<Name> namesList, Object indexStructure); // IS INDEX NECESSARY??,null check?
+
     /**
      * Gets a user-friendly name for this strategy.
      * @return The name identifier.

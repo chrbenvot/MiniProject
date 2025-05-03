@@ -1,15 +1,17 @@
 package com.info2.miniprojet.comparison;
 
+import com.info2.miniprojet.core.Name;
+
 import java.util.List;
 
 public interface NameComparator {
     /**
      * Calculates the similarity or distance score between two names represented as lists of processed tokens.
-     * @param processedTokens1 Tokens for the first name.
-     * @param processedTokens2 Tokens for the second name.
+     * @param name1 the first name.
+     * @param name2 the second name.
      * @return The calculated score.
      */
-    double calculateScore(List<String> processedTokens1, List<String> processedTokens2);
+    double calculateScore(Name name1, Name name2);
 
     /**
      * Indicates if the score represents distance (lower is better) or similarity (higher is better).

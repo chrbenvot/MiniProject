@@ -7,14 +7,19 @@ import com.info2.miniprojet.indexing.*;
 import com.info2.miniprojet.indexing.impl.*;
 import com.info2.miniprojet.comparison.*;
 import com.info2.miniprojet.comparison.impl.*;
+import com.info2.miniprojet.factory.StrategyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Engine {
 
+    private final StrategyFactory strategyFactory;
+    public Engine(StrategyFactory factory){
+        this.strategyFactory = factory;
+    }
 
-    public List<ComparisonResult> performSearch(String queryName, List<String> namesList, Configuration config) {
+    public List<ComparisonResult> performSearch(Name queryName, List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Search for '" + queryName + "'...");
 
         // 1. Instantiate strategies based on config
@@ -77,7 +82,7 @@ public class Engine {
         }
     }
 
-    public List<ComparisonResult> performComparison(List<String> list1, List<String> list2, Configuration config) {
+    public List<ComparisonResult> performComparison(List<Name> list1, List<Name> list2, Configuration config) {
         System.out.println("Engine: Starting Comparison...");
         // TODO: Implement skeleton logic similar to performSearch
         //       - Instantiate strategies

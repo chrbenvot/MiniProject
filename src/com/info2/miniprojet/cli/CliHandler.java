@@ -63,7 +63,7 @@ public class CliHandler {
         String filePath = getFilePathOrUrlInput("Enter file path or URL to search in: ");
         try {
             // Load data using MiniProject's loadData method
-            List<String> namesList = loadData(filePath);
+            List<String> namesList = loadData(filePath); //TODO: should be names not strings
             if (namesList != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 // Call engine with loaded data and current config from MiniProject
@@ -82,8 +82,8 @@ public class CliHandler {
         String filePath1 = getFilePathOrUrlInput("Enter first file path or URL: ");
         String filePath2 = getFilePathOrUrlInput("Enter second file path or URL: ");
         try {
-            List<String> list1 = loadData(filePath1);
-            List<String> list2 = loadData(filePath2);
+            List<String> list1 = loadData(filePath1); //TODO:needs to be names not strings
+            List<String> list2 = loadData(filePath2); //TODO: ditto
             if (list1 != null && list2 != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 List<ComparisonResult> results = engine.performComparison(list1, list2, app.getCurrentConfig());
@@ -116,7 +116,7 @@ public class CliHandler {
     private void handleConfiguration() {
         System.out.println("\n=== Configuration ===");
         // Display current config first
-        System.out.println("Current Config: " + app.getCurrentConfig()); // !! Configuration has toString()
+        System.out.println("Current Config: " + app.getCurrentConfig());
 
         System.out.println("1. Choose Preprocessor");
         System.out.println("2. Choose Index Builder");
@@ -222,6 +222,6 @@ public class CliHandler {
     // TODO: change this when we actually add url class
     private List<String> loadData(String pathOrUrl) throws IOException, InterruptedException {
         // Delegate loading to the MiniProject instance
-        return app.loadData(pathOrUrl);
+        return app.loadRawData(pathOrUrl);
     }
 }

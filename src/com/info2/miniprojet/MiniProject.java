@@ -78,11 +78,13 @@ public class MiniProject {
         return this.currentConfig;
     }
 
+    public List<Name> loadAndPreprocessData(String pathOrUrl) throws IOException, InterruptedException{ //TODO: should this even be heere and not in engine
+
+    }
     // --- Data Loading Method (Instance Method) ---
 
-    // Include InterruptedException if any part of loadData might still throw it,
-    // otherwise, it can be removed if only loadFromFile is implemented for now.
-    public List<String> loadData(String pathOrUrl) throws IOException /*, InterruptedException */ {
+    // Include InterruptedException since we'll probably use HttpClient
+    public List<String> loadRawData(String pathOrUrl) throws IOException , InterruptedException {
         System.out.println("MiniProject: Loading data from " + pathOrUrl); // Debugging line
         if (pathOrUrl == null || pathOrUrl.trim().isEmpty()) {
             throw new IOException("Path or URL cannot be empty.");
@@ -177,10 +179,10 @@ public class MiniProject {
         config.setPreprocessorChoice("NOOP");
         config.setIndexBuilderChoice("NOOP_BUILDER");
         config.setCandidateFinderChoice("FIND_ALL");
-        config.setNameComparatorChoice("PASS_THROUGH_NAME"); // Or "EXACT_STRING" if simpler initially
-        config.setResultThreshold(0.85); // Default threshold (example)
-        config.setMaxResults(20); // Default max results (example)
-        config.setThresholdMode(false); // Default to Max Results mode (example)
+        config.setNameComparatorChoice("PASS_THROUGH_NAME"); //
+        config.setResultThreshold(0.85); // Default threshold
+        config.setMaxResults(20); // Default max results
+        config.setThresholdMode(false); // Default to Max Results mode
         return config;
     }
 
@@ -190,5 +192,8 @@ public class MiniProject {
         MiniProject app = new MiniProject(); // Create instance
         app.start(); // Call instance method
         System.out.println("Application finished."); // Will only be reached if startMainMenuLoop exits normally
+    }
+    public Engine getEngine() {
+        return this.engine;
     }
 }
