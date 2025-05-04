@@ -1,4 +1,6 @@
-package com.info2.miniprojet.data;
+package com.info2.miniprojet.data.impl;
+
+import com.info2.miniprojet.data.DataProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +14,6 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 

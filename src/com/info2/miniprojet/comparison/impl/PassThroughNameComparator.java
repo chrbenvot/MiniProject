@@ -4,7 +4,6 @@ import com.info2.miniprojet.comparison.NameComparator;
 import com.info2.miniprojet.comparison.StringComparator;
 import com.info2.miniprojet.core.Name;
 
-import java.util.List;
 
 public class PassThroughNameComparator implements NameComparator {
 
@@ -21,7 +20,7 @@ public class PassThroughNameComparator implements NameComparator {
     @Override
     public double calculateScore(Name name1, Name name2 ) {
         // Simple lazy implementation: join tokens back into strings and compare.
-        return internalStringComparator.calculateScore(name1.orignalName(), name2.orignalName());
+        return internalStringComparator.calculateScore(name1.originalName(), name2.originalName());
     }
 
     @Override

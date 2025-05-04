@@ -15,7 +15,7 @@ import com.info2.miniprojet.cli.CliHandler;
 import com.info2.miniprojet.config.Configuration;
 import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.Name;
-import com.info2.miniprojet.factory.StrategyFactory;
+import com.info2.miniprojet.factory.StrategyFactory; // Static methods will be used
 import com.info2.miniprojet.preprocessing.Preprocessor;
 import com.info2.miniprojet.data.*;
 
@@ -23,19 +23,20 @@ import com.info2.miniprojet.data.*;
 public class MiniProject {
     private CliHandler cliHandler;
     private Engine engine;
-    private Configuration currentConfig; // Non-static
-    private final String configFilePath;// Final after constructor
+    private Configuration currentConfig;
+    private final String configFilePath;
 
-    // Constructor: Initializes components and loads config
     public MiniProject() {
-        this.configFilePath = "app_config.properties"; // Example file name
-        this.currentConfig = loadConfig(); // Load from file or defaults
-        this.engine = new Engine();
-        // Pass the Engine instance and THIS MiniProject instance (for config access) to CliHandler
+        this.configFilePath = "app_config.properties";
+        this.currentConfig = loadConfig();
+        // Engine constructor might not need factory if Engine also uses static factory methods
+        // Or if Engine needs to be testable with a mock factory, then passing an instance is good.
+        // For now, let's assume Engine can use static factory calls too for simplicity.
+        this.engine = new Engine(); // Engine will call StrategyFactory.create... internally
         this.cliHandler = new CliHandler(engine, this);
     }
 
-    // Starts the application loop
+    // ... (start method, config setters, getCurrentConfig are fine) ...
     public void start() {
         cliHandler.startMainMenuLoop();
     }
@@ -47,10 +48,14 @@ public class MiniProject {
         saveConfig(); // Save after modification
     }
 
-    public void setIndexBuilderChoice(String indexBuilderChoice) {
-        this.currentConfig.setIndexBuilderChoice(indexBuilderChoice);
-        saveConfig();
-    }
+    // IndexBuilder choice is now implicitly part of CandidateFinder logic or not directly chosen
+    // If you still want to configure some aspect of indexing related to a CandidateFinder,
+    // you might need a different configuration field or a more complex CandidateFinderChoice string.
+    // For now, removing setIndexBuilderChoice as IndexBuilder interface is removed.
+    // public void setIndexBuilderChoice(String indexBuilderChoice) {
+    //     this.currentConfig.setIndexBuilderChoice(indexBuilderChoice); // This field might be removed from Configuration DTO
+    //     saveConfig();
+    // }
 
     public void setCandidateFinderChoice(String candidateFinderChoice) {
         this.currentConfig.setCandidateFinderChoice(candidateFinderChoice);
@@ -83,77 +88,58 @@ public class MiniProject {
         return this.currentConfig;
     }
 
-    public List<Name> loadAndPreprocessData(DataProvider dataProvider) throws IOException, InterruptedException{ //for now we'll consider that ID's taken from the file can be null
-        System.out.println("Main: Starting data load and preprocess for:"+dataProvider);
-        // 1-Get the current preprocessor
-        Configuration config = getCurrentConfig();
-        String preprocessorChoice = config.getPreprocessorChoice();
-        Preprocessor preprocessor=StrategyFactory.createPreprocessor(preprocessorChoice);
-        System.out.println("Main: Preprocessing with "+preprocessor.getName());
 
-        // 2- Load raw list of names
-        List<String> rawNames=loadRawData(dataProvider);
+    public List<Name> loadAndPreprocessData(DataProvider dataProvider) throws IOException, InterruptedException {
+        System.out.println("MiniProject: Starting data load and preprocess using: " + dataProvider.getClass().getSimpleName());
 
-        // 3-Process each name and create a corresponding name object
-        List<Name> processedNames=new ArrayList<>(rawNames.size());
-        int lineNumber=0;
+        String preprocessorChoice = this.currentConfig.getPreprocessorChoice();
+        // Call StrategyFactory statically
+        Preprocessor preprocessor = StrategyFactory.createPreprocessor(preprocessorChoice);
+        System.out.println("MiniProject: Preprocessing with " + preprocessor.getName());
 
-        for(String line : rawNames){
+        List<String> rawNames = dataProvider.loadRawLines();
+
+        List<Name> processedNames = new ArrayList<>(rawNames.size());
+        int lineNumber = 0;
+
+        for (String line : rawNames) {
             lineNumber++;
-            if(line==null||line.isBlank()){
-                System.out.println("Skipping empty line at line number "+lineNumber);
+            if (line == null || line.isBlank()) {
+                System.out.println("MiniProject: Skipping empty or blank line at number " + lineNumber);
+                continue;
             }
-            String parsedId=null;
-            String originalName=null;
-            String nameToProcess=null;
-            String[] parts=line.split(",",2); //Split into 2 parts  max using the csv delimiter ,
-            if (parts.length==1){
-                // no ID found
-                nameToProcess=parts[0].trim();
-                originalName=nameToProcess;
-                System.out.println("Main: No ID found for line "+lineNumber+" : "+nameToProcess);
+
+            String parsedId = null;
+            String originalNameForRecord;
+            String nameToProcess;
+
+            String[] parts = line.split(",", 2);
+            if (parts.length == 1) {
+                nameToProcess = parts[0].trim();
+                originalNameForRecord = nameToProcess;
             } else {
-                String potentialId=parts[0].trim();
-                nameToProcess=parts[1].trim();
-                originalName=nameToProcess;
-                if(!potentialId.isBlank()){
-                    parsedId=potentialId;
-                    System.out.println("Main: ID found for line "+lineNumber+" : "+parsedId);
-                } else{
-                    System.out.println("Main: No ID found for line "+lineNumber+" : "+nameToProcess);
+                String potentialId = parts[0].trim();
+                nameToProcess = parts[1].trim();
+                originalNameForRecord = nameToProcess;
+                if (!potentialId.isBlank()) {
+                    parsedId = potentialId;
                 }
             }
-            String finalId=(parsedId != null && !parsedId.isBlank())?parsedId:"L_"+lineNumber; //If ID found:good,else we set L_lineNumber as ID
-            //Actually process the name (we need a list as input so we wrap the string)
-            List<String> processedTokens=preprocessor.preprocess(List.of(nameToProcess));
-            //We create the name object and add it to the list to return
-            Name name=new Name(finalId,originalName,processedTokens);
-            processedNames.add(name);
+            if (nameToProcess.isEmpty()) {
+                System.out.println("MiniProject: Skipping line " + lineNumber + " because name part is empty after parsing ID.");
+                continue;
+            }
+            String finalId = (parsedId != null && !parsedId.isBlank()) ? parsedId : "L_" + lineNumber;
+            List<String> processedTokens = preprocessor.preprocess(List.of(nameToProcess));
+            Name nameObject = new Name(finalId, originalNameForRecord, processedTokens);
+            processedNames.add(nameObject);
         }
-        System.out.println("Main:Finished loading and preprocessing. Created " + processedNames.size() + " Name objects.");
+        System.out.println("MiniProject: Finished loading and preprocessing. Created " + processedNames.size() + " Name objects.");
         return processedNames;
     }
-    // --- Data Loading Method (Instance Method) ---
-
-    // Include InterruptedException since we'll probably use HttpClient
-    public List<String> loadRawData(DataProvider dataProvider) throws IOException , InterruptedException {
-        System.out.println("MiniProject: Loading data from " + dataProvider); // Debugging line
-        if (dataProvider == null ) {
-            throw new IOException("Path or URL cannot be empty.");
-        }
-        return dataProvider.loadRawLines();
-    }
-
-    // Emptied URL loading method
-    private List<String> loadFromUrl(String urlString) throws IOException , InterruptedException  {
-        System.out.println("MiniProject: URL loading requested for: " + urlString);
-        // Implementation removed - Placeholder
-        throw new UnsupportedOperationException("URL loading not yet implemented.");
-        // return new ArrayList<>(); // Alternative: return empty list instead of throwing
-    }
-
 
     // --- Configuration Persistence (Instance Methods) ---
+    // loadConfig, saveConfig, createDefaultConfig remain the same
 
     private Configuration loadConfig() {
         Properties props = new Properties();
@@ -162,9 +148,8 @@ public class MiniProject {
             props.load(fis);
             System.out.println("MiniProject: Loaded configuration from " + configFilePath);
 
-            // Load values, falling back to defaults if property is missing
             config.setPreprocessorChoice(props.getProperty("preprocessor", config.getPreprocessorChoice()));
-            config.setIndexBuilderChoice(props.getProperty("indexBuilder", config.getIndexBuilderChoice()));
+            // config.setIndexBuilderChoice(props.getProperty("indexBuilder", config.getIndexBuilderChoice())); // Removed if no IndexBuilderChoice
             config.setCandidateFinderChoice(props.getProperty("candidateFinder", config.getCandidateFinderChoice()));
             config.setNameComparatorChoice(props.getProperty("nameComparator", config.getNameComparatorChoice()));
             config.setResultThreshold(Double.parseDouble(props.getProperty("resultThreshold", String.valueOf(config.getResultThreshold()))));
@@ -173,19 +158,16 @@ public class MiniProject {
 
         } catch (IOException e) {
             System.out.println("MiniProject: Configuration file not found or error reading. Using default configuration.");
-            // File not found is expected on first run, just use defaults.
         } catch (NumberFormatException e) {
             System.err.println("Warning: Error parsing numeric value in config file. Using defaults for affected values.");
-            // If parsing fails, defaults are already set
         }
         return config;
     }
 
     private void saveConfig() {
         Properties props = new Properties();
-        // Store current config values into properties
         props.setProperty("preprocessor", currentConfig.getPreprocessorChoice());
-        props.setProperty("indexBuilder", currentConfig.getIndexBuilderChoice());
+        // props.setProperty("indexBuilder", currentConfig.getIndexBuilderChoice()); // Removed if no IndexBuilderChoice
         props.setProperty("candidateFinder", currentConfig.getCandidateFinderChoice());
         props.setProperty("nameComparator", currentConfig.getNameComparatorChoice());
         props.setProperty("resultThreshold", String.valueOf(currentConfig.getResultThreshold()));
@@ -200,28 +182,31 @@ public class MiniProject {
         }
     }
 
-    // Helper to create default configuration object
     private Configuration createDefaultConfig() {
         Configuration config = new Configuration();
-        // Set initial defaults - use keys that match your lazy implementations
-        config.setPreprocessorChoice("NOOP");
-        config.setIndexBuilderChoice("NOOP_BUILDER");
-        config.setCandidateFinderChoice("FIND_ALL");
-        config.setNameComparatorChoice("PASS_THROUGH_NAME"); //
-        config.setResultThreshold(0.85); // Default threshold
-        config.setMaxResults(20); // Default max results
-        config.setThresholdMode(false); // Default to Max Results mode
+        config.setPreprocessorChoice("NOOP"); // Ensure these match StrategyFactory keys
+        // config.setIndexBuilderChoice("NOOP_BUILDER"); // Removed if no IndexBuilderChoice
+        config.setCandidateFinderChoice("CARTESIAN_FIND_ALL");
+        config.setNameComparatorChoice("PASS_THROUGH_NAME");
+        config.setResultThreshold(0.85);
+        config.setMaxResults(20);
+        config.setThresholdMode(false);
         return config;
     }
-
     // --- MiniProject Entry Point ---
     public static void main(String[] args) {
         System.out.println("Application starting...");
-        MiniProject app = new MiniProject(); // Create instance
-        app.start(); // Call instance method
-        System.out.println("Application finished."); // Will only be reached if startMainMenuLoop exits normally
+        MiniProject app = new MiniProject();
+        app.start();
+        System.out.println("Application finished.");
     }
+
     public Engine getEngine() {
         return this.engine;
     }
+
+    // Remove getStrategyFactory() if Engine and CliHandler use static factory methods
+    // public StrategyFactory getStrategyFactory() {
+    //     return this.strategyFactory; // This field was removed
+    // }
 }

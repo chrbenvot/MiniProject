@@ -1,12 +1,11 @@
 package com.info2.miniprojet.indexing.impl;
 
 import com.info2.miniprojet.core.Name;
-import com.info2.miniprojet.indexing.IndexBuilder;
 import java.util.List;
 
-public class NoOpIndexBuilder implements IndexBuilder {
+public class NoOpIndexBuilder  {
 
-    @Override
+
     public Object buildIndex(List<Name> names) { //OBJECT: THIS IS A SKELETOOOOOON(actually maybe not lmao)
         // Skeleton implementation: Does no actual indexing,
         // but returns the SIZE of the input list.
@@ -16,7 +15,7 @@ public class NoOpIndexBuilder implements IndexBuilder {
         return size; // Return the number of items processed
     }
 
-    @Override
+
     public String getName() {
         return "NOOP_BUILDER"; // Matches default config choice
     }

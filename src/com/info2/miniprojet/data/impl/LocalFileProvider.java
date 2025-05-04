@@ -1,4 +1,6 @@
-package com.info2.miniprojet.data;
+package com.info2.miniprojet.data.impl;
+
+import com.info2.miniprojet.data.DataProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
