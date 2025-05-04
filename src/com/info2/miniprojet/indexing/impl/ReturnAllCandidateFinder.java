@@ -2,50 +2,80 @@ package com.info2.miniprojet.indexing.impl;
 
 import com.info2.miniprojet.core.Couple;
 import com.info2.miniprojet.core.Name;
-import com.info2.miniprojet.indexing.CandidateFinder;
-import java.util.List;
+import com.info2.miniprojet.indexing.CandidateFinder; // Import the interface
+
 import java.util.ArrayList;
-import java.util.Collections; // Added for Collections.emptyList()
+import java.util.Collections;
+import java.util.List;
 
 public class ReturnAllCandidateFinder implements CandidateFinder {
 
+    /**
+     * Lazy implementation for Search: Returns pairs of the queryName with every name in namesList.
+     * Ignores indexStructure.
+     */
     @Override
     public List<Couple<Name>> findCandidates(Name queryName, List<Name> namesList, Object indexStructure) {
-        // Skeleton implementation: Ignores the query.
-        System.out.println("DEBUG: ReturnAllCandidateFinder.findCandidates called.");
-
-        if (!(indexStructure instanceof Integer)) {
-            System.err.println("Warning: ReturnAllCandidateFinder expected indexStructure to be Integer (size), but got " + (indexStructure == null ? "null" : indexStructure.getClass().getName()) + ". Returning empty list.");
-            return Collections.emptyList(); // Return empty list if index is not the expected size
+        System.out.println("DEBUG: ReturnAllCandidateFinder.findCandidates (Search overload) called.");
+        if (queryName == null || namesList == null || namesList.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        int expectedSize = (Integer) indexStructure;
-        int actualSize = namesList.size();
+        List<Couple<Name>> candidatePairs = new ArrayList<>(namesList.size());
+        for (Name candidateName : namesList) {
+            // Create a pair of the original query object and the candidate object
+            candidatePairs.add(new Couple<>(queryName, candidateName));
+        }
+        System.out.println("DEBUG: ReturnAllCandidateFinder (Search) returning " + candidatePairs.size() + " pairs.");
+        return candidatePairs;
+    }
 
-        // Check if provided size matches actual list size
-        if (expectedSize != actualSize) {
-            System.err.println("Warning: ReturnAllCandidateFinder index size (" + expectedSize + ") does not match namesList size (" + actualSize + "). Using actual size.");
-            // Decide how to handle mismatch - use actualSize for safety in loop
-            // Or return empty list if it implies an inconsistency:
-            // return Collections.emptyList();
+    /**
+     * Lazy implementation for Compare: Returns the full Cartesian product of list1 and list2.
+     * Ignores indexStructures.
+     */
+    @Override
+    public List<Couple<Name>> findCandidates(List<Name> list1, List<Name> list2, Object indexStructure1, Object indexStructure2) {
+        System.out.println("DEBUG: ReturnAllCandidateFinder.findCandidates (Compare overload) called.");
+        if (list1 == null || list2 == null || list1.isEmpty() || list2.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        if (actualSize <= 0) {
-            System.out.println("DEBUG: ReturnAllCandidateFinder received size 0 or less, returning empty list.");
-            return Collections.emptyList(); // No indices if size is zero or negative
+        List<Couple<Name>> candidatePairs = new ArrayList<>(list1.size() * list2.size());
+        for (Name name1 : list1) {
+            for (Name name2 : list2) {
+                candidatePairs.add(new Couple<>(name1, name2));
+            }
+        }
+        System.out.println("DEBUG: ReturnAllCandidateFinder (Compare) returning " + candidatePairs.size() + " pairs (Cartesian Product).");
+        return candidatePairs;
+    }
+
+    /**
+     * Lazy implementation for Deduplication: Returns all unique pairs (i < j) from the list.
+     * Ignores indexStructure.
+     */
+    @Override
+    public List<Couple<Name>> findCandidates(List<Name> list, Object indexStructure) {
+        System.out.println("DEBUG: ReturnAllCandidateFinder.findCandidates (Deduplication overload) called.");
+        if (list == null || list.size() < 2) { // Need at least 2 names to form a pair
+            return Collections.emptyList();
         }
 
-        // Generate indices from 0 to size-1
-        List<Couple<Name>> candidatePairs = new ArrayList<>(actualSize);
-        for (Name candidateName: namesList) {
-            candidatePairs.add(new Couple<>(queryName,candidateName));
+        List<Couple<Name>> candidatePairs = new ArrayList<>();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            for (int j = i + 1; j < size; j++) { // j starts from i + 1
+                candidatePairs.add(new Couple<>(list.get(i), list.get(j)));
+            }
         }
-        System.out.println("DEBUG: ReturnAllCandidateFinder returning " + candidatePairs.size() + " candidate pairs.");
+        System.out.println("DEBUG: ReturnAllCandidateFinder (Dedupe) returning " + candidatePairs.size() + " pairs.");
         return candidatePairs;
     }
 
     @Override
     public String getName() {
-        return "FIND_ALL"; // Matches default config choice
+        // This identifier can be used in the Configuration DTO and StrategyFactory
+        return "FIND_ALL";
     }
 }
