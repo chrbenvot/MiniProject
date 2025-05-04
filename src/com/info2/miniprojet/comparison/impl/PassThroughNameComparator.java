@@ -20,7 +20,9 @@ public class PassThroughNameComparator implements NameComparator {
     @Override
     public double calculateScore(Name name1, Name name2 ) {
         // Simple lazy implementation: join tokens back into strings and compare.
-        return internalStringComparator.calculateScore(name1.originalName(), name2.originalName());
+        String joinedTokens1= String.join(" ",name1.processedTokens());
+        String joinedTokens2= String.join(" ",name2.processedTokens());
+        return internalStringComparator.calculateScore(joinedTokens1, joinedTokens2);
     }
 
     @Override
