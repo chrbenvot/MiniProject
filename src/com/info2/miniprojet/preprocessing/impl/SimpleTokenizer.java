@@ -7,7 +7,7 @@ public class SimpleTokenizer implements Preprocessor {
 	@Override
 	public List<String> preprocess(List<String> inputTokens) {
 		List<String> copiedtokens = new ArrayList<>(inputTokens);
-		list<String> output = new ArrayList<>();
+		List<String> output = new ArrayList<>();
 		for ( int i = 0 ; i < inputTokens.size() ; i++ ) {
 			String token = copiedtokens.get(i);
 			// Example tokenization : split by spaces
@@ -17,7 +17,7 @@ public class SimpleTokenizer implements Preprocessor {
 				
 			}
 		}
-		return new ArrayList<>(inputTokens); 
+		return output; 
 	}
 
 	@Override
