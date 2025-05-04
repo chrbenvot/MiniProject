@@ -4,6 +4,7 @@ import com.info2.miniprojet.MiniProject;
 import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.ComparisonResult; // Need this DTO
 import com.info2.miniprojet.core.Name;
+import com.info2.miniprojet.data.*;
 
 import java.util.Scanner;
 import java.util.List;
@@ -61,10 +62,15 @@ public class CliHandler {
     private void handleSearch() {
         System.out.println("\n=== Name Search ===");
         String name = getInput("Enter name to search: ");
-        String filePath = getFilePathOrUrlInput("Enter file path or URL to search in: ");
+        if (name.isEmpty()){
+            System.err.println("Error: Query name cannot be empty.");
+            return;
+        }
+        DataProvider listProvider = getDataProvider("Enter data source (File path/URL or 'MANUAL'): ");
+        if (listProvider == null) return;
         try {
-            // Load data using MiniProject's loadData method
-            List<Name> namesList = app.loadAndPreprocessData(filePath);
+            System.out.println("CLI: Loading and preprocessing data...");
+            List<Name> namesList = app.loadAndPreprocessData(listProvider);
             if (namesList != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 // Call engine with loaded data and current config from MiniProject
@@ -72,7 +78,7 @@ public class CliHandler {
                 displayResults(results); // Display results
             }
         } catch (IOException | InterruptedException e) { // Catch potential exceptions from loadData
-            System.err.println("Error loading data for search from " + filePath + ": " + e.getMessage());
+            System.err.println("Error loading data for search from " + listProvider + ": " + e.getMessage());
         } catch (Exception e) { // Catch unexpected errors from engine etc.
             System.err.println("An unexpected error occurred during search: " + e.getMessage());
         }
@@ -80,11 +86,16 @@ public class CliHandler {
 
     private void handleCompare() {
         System.out.println("\n=== Name List Comparison ===");
-        String filePath1 = getFilePathOrUrlInput("Enter first file path or URL: ");
-        String filePath2 = getFilePathOrUrlInput("Enter second file path or URL: ");
+        System.out.println("Enter data source for first list:");
+        DataProvider provider1 = getDataProvider("Enter data source (File path/URL or 'MANUAL'): ");
+        if (provider1 == null) return;
+
+        System.out.println("\nEnter data source for second list:");
+        DataProvider provider2 = getDataProvider("Enter data source (File path/URL or 'MANUAL'): ");
+        if (provider2 == null) return;
         try {
-            List<Name> list1 = app.loadAndPreprocessData(filePath1);
-            List<Name> list2 = app.loadAndPreprocessData(filePath2);
+            List<Name> list1 = app.loadAndPreprocessData(provider1);
+            List<Name> list2 = app.loadAndPreprocessData(provider2);
             if (list1 != null && list2 != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 List<ComparisonResult> results = engine.performComparison(list1, list2, app.getCurrentConfig());
@@ -99,16 +110,17 @@ public class CliHandler {
 
     private void handleDeduplicate() {
         System.out.println("\n=== Name List Deduplication ===");
-        String filePath = getFilePathOrUrlInput("Enter file path or URL to deduplicate: ");
+        DataProvider listProvider = getDataProvider("Enter data source (File path/URL or 'MANUAL'): ");
+        if (listProvider == null) return;
         try {
-            List<Name> namesList = app.loadAndPreprocessData(filePath);
+            List<Name> namesList = app.loadAndPreprocessData(listProvider);
             if (namesList != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 List<ComparisonResult> results = engine.performDeduplication(namesList, app.getCurrentConfig());
                 displayResults(results);
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Error loading data for deduplication from " + filePath + ": " + e.getMessage());
+            System.err.println("Error loading data for deduplication :"+  e.getMessage());
         } catch (Exception e) {
             System.err.println("An unexpected error occurred during deduplication: " + e.getMessage());
         }
@@ -209,10 +221,19 @@ public class CliHandler {
         }
         System.out.println("--- End of Results ---");
     }
-
-    private String getFilePathOrUrlInput(String prompt) {
-        // TODO:validation
-        return getInput(prompt);
+    private DataProvider getDataProvider(String prompt) {
+        String input = getInput(prompt);
+        if (input.equalsIgnoreCase("MANUAL")) {
+            // Pass the existing scanner to the CliInputProvider
+            return new CliInputProvider(this.scanner);
+        } else if (input.toLowerCase().startsWith("http://") || input.toLowerCase().startsWith("https://")) {
+            return new UrlDataProvider(input); // Assumes UrlDataProvider exists
+        } else if (!input.isEmpty()) {
+            return new LocalFileProvider(input); // Assumes LocalFileProvider exists
+        } else {
+            System.err.println("Error: No valid data source provided.");
+            return null; // Indicate failure
+        }
     }
 
     private String getInput(String prompt) {
@@ -220,9 +241,4 @@ public class CliHandler {
         return scanner.nextLine().trim();
     }
 
-    // TODO: change this when we actually add url class
-    private List<String> loadData(String pathOrUrl) throws IOException, InterruptedException {
-        // Delegate loading to the MiniProject instance
-        return app.loadRawData(pathOrUrl);
-    }
 }
