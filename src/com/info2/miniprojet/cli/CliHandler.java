@@ -3,6 +3,7 @@ package com.info2.miniprojet.cli;
 import com.info2.miniprojet.MiniProject;
 import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.ComparisonResult; // Need this DTO
+import com.info2.miniprojet.core.Name;
 
 import java.util.Scanner;
 import java.util.List;
@@ -63,7 +64,7 @@ public class CliHandler {
         String filePath = getFilePathOrUrlInput("Enter file path or URL to search in: ");
         try {
             // Load data using MiniProject's loadData method
-            List<String> namesList = loadData(filePath); //TODO: should be names not strings
+            List<Name> namesList = app.loadAndPreprocessData(filePath);
             if (namesList != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 // Call engine with loaded data and current config from MiniProject
@@ -82,8 +83,8 @@ public class CliHandler {
         String filePath1 = getFilePathOrUrlInput("Enter first file path or URL: ");
         String filePath2 = getFilePathOrUrlInput("Enter second file path or URL: ");
         try {
-            List<String> list1 = loadData(filePath1); //TODO:needs to be names not strings
-            List<String> list2 = loadData(filePath2); //TODO: ditto
+            List<Name> list1 = app.loadAndPreprocessData(filePath1);
+            List<Name> list2 = app.loadAndPreprocessData(filePath2);
             if (list1 != null && list2 != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 List<ComparisonResult> results = engine.performComparison(list1, list2, app.getCurrentConfig());
@@ -100,7 +101,7 @@ public class CliHandler {
         System.out.println("\n=== Name List Deduplication ===");
         String filePath = getFilePathOrUrlInput("Enter file path or URL to deduplicate: ");
         try {
-            List<String> namesList = loadData(filePath);
+            List<Name> namesList = app.loadAndPreprocessData(filePath);
             if (namesList != null) {
                 System.out.println("CLI: Data loaded. Calling engine...");
                 List<ComparisonResult> results = engine.performDeduplication(namesList, app.getCurrentConfig());

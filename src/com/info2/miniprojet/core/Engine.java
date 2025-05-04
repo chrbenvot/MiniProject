@@ -15,12 +15,12 @@ import java.util.List;
 public class Engine {
 
 
-    public List<ComparisonResult> performSearch(Name queryName, List<Name> namesList, Configuration config) {
+    public List<ComparisonResult> performSearch(String queryName, List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Search for '" + queryName + "'...");
 
         // 1. Instantiate strategies based on config
         // Note: Error handling for invalid choices could be added here or in create methods
-        Preprocessor preprocessor = createPreprocessor(config.getPreprocessorChoice());
+        Preprocessor preprocessor = createPreprocessor(config.getPreprocessorChoice());//TODO: actually implement these(they just use factory)
         IndexBuilder indexBuilder = createIndexBuilder(config.getIndexBuilderChoice());
         CandidateFinder candidateFinder = createCandidateFinder(config.getCandidateFinderChoice());
         NameComparator nameComparator = createNameComparator(config.getNameComparatorChoice());
@@ -30,38 +30,34 @@ public class Engine {
             // Preprocess the query
             // For skeleton, assume simple tokenization if needed or that preprocessor handles it
             System.out.println("Engine: Preprocessing query...");
-            List<String> queryTokens = preprocessor.preprocess(List.of(queryName.orignalName())); // Wrap query in list
+            List<String> queryTokens = preprocessor.preprocess(List.of(queryName)); // Wrap query in list
+            Name queryNameObj = new Name(queryName,queryName,queryTokens);// THE ID is the name itself here ... probably should change
 
-            // Preprocess the data list
-            System.out.println("Engine: Preprocessing data list (" + namesList.size() + " entries)...");
-            List<List<String>> processedNameTokensList = new ArrayList<>(namesList.size());
-            for (Name name : namesList) {
-                processedNameTokensList.add(preprocessor.preprocess(List.of(name.orignalName()))); // TODO: Wrap each name in a list?
-            }
+            // The data list is preprocessed in main(hmmmmmm) so no need to preprocess it again
 
             // Build the index
             System.out.println("Engine: Building index...");
-            Object index = indexBuilder.buildIndex(processedNameTokensList); // Build index with token lists
+            Object index = indexBuilder.buildIndex(namesList); // Build index with token lists
 
             // Find candidates
             System.out.println("Engine: Finding candidates...");
-            // Pass index Object, query tokens. CandidateFinder might need original list size.
+            // Pass index Object, query tokens. CandidateFinder might need the original list size.
             // Adjust ReturnAllCandidateFinder if it needs the size.
-            List<Integer> candidateIndices = candidateFinder.findCandidates(queryName,queryTokens, index);
-            System.out.println("Engine: Found " + candidateIndices.size() + " candidate indices.");
+            List<Couple<Name>> candidatePairs = candidateFinder.findCandidates(queryNameObj,namesList, index);
+            System.out.println("Engine: Found " + candidatePairs.size() + " candidate Pairs.");
 
             // Compare candidates
             System.out.println("Engine: Comparing candidates...");
             List<ComparisonResult> results = new ArrayList<>();
-            for (int indexPos : candidateIndices) {
-                if (indexPos >= 0 && indexPos < namesList.size()) {
-                    List<String> candidateTokens = processedNameTokensList.get(indexPos);
-                    double score = nameComparator.calculateScore(queryTokens, candidateTokens);
-                    // Use original query and candidate names for the result DTO
-                    results.add(new ComparisonResult(queryName, namesList.get(indexPos), score, nameComparator.getName()));
-                } else {
-                    System.err.println("Engine Warning: Candidate finder returned invalid index: " + indexPos);
-                }
+            for (Couple<Name> pair : candidatePairs) {
+               Name name1=pair.first();
+               Name name2=pair.second();
+               if (name1==null || name2==null){
+                System.out.println("Engine: One of the names is null:"+pair+" ,Skipping...");
+               }
+               double score=nameComparator.calculateScore(name1, name2);
+               results.add(new ComparisonResult(name1.orignalName(),name2.orignalName(),score,nameComparator.getName()));
+
             }
 
             // Filter/Sort (Placeholder for now)
@@ -89,7 +85,7 @@ public class Engine {
         return new ArrayList<>(); // Return empty list for now
     }
 
-    public List<ComparisonResult> performDeduplication(List<String> namesList, Configuration config) {
+    public List<ComparisonResult> performDeduplication(List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Deduplication...");
         // TODO: Implement skeleton logic similar to performSearch
         //       - Instantiate strategies

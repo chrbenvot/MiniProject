@@ -2,6 +2,7 @@ package com.info2.miniprojet.comparison.impl;
 
 import com.info2.miniprojet.comparison.NameComparator;
 import com.info2.miniprojet.comparison.StringComparator;
+import com.info2.miniprojet.core.Name;
 
 import java.util.List;
 
@@ -18,12 +19,9 @@ public class PassThroughNameComparator implements NameComparator {
     }
 
     @Override
-    public double calculateScore(List<String> processedTokens1, List<String> processedTokens2) {
+    public double calculateScore(Name name1, Name name2 ) {
         // Simple lazy implementation: join tokens back into strings and compare.
-        String joined1 = String.join(" ", processedTokens1).trim();
-        String joined2 = String.join(" ", processedTokens2).trim();
-
-        return internalStringComparator.calculateScore(joined1, joined2);
+        return internalStringComparator.calculateScore(name1.orignalName(), name2.orignalName());
     }
 
     @Override

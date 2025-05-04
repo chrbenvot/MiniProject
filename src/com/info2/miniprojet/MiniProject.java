@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import com.info2.miniprojet.config.Configuration;
 import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.Name;
 import com.info2.miniprojet.factory.StrategyFactory;
+import com.info2.miniprojet.preprocessing.Preprocessor;
 
 
 public class MiniProject {
@@ -80,8 +82,55 @@ public class MiniProject {
         return this.currentConfig;
     }
 
-    public List<Name> loadAndPreprocessData(String pathOrUrl) throws IOException, InterruptedException{ //TODO: should this even be heere and not in engine
+    public List<Name> loadAndPreprocessData(String pathOrUrl) throws IOException, InterruptedException{ //for now we'll consider that ID's taken from the file can be null
+        System.out.println("Main: Starting data load and preprocess for:"+pathOrUrl);
+        // 1-Get the current preprocessor
+        Configuration config = getCurrentConfig();
+        String preprocessorChoice = config.getPreprocessorChoice();
+        Preprocessor preprocessor=StrategyFactory.createPreprocessor(preprocessorChoice);
+        System.out.println("Main: Preprocessing with "+preprocessor.getName());
 
+        // 2- Load raw list of names
+        List<String> rawNames=loadRawData(pathOrUrl);
+
+        // 3-Process each name and create a corresponding name object
+        List<Name> processedNames=new ArrayList<>(rawNames.size());
+        int lineNumber=0;
+
+        for(String line : rawNames){
+            lineNumber++;
+            if(line==null||line.isBlank()){
+                System.out.println("Skipping empty line at line number "+lineNumber);
+            }
+            String parsedId=null;
+            String originalName=null;
+            String nameToProcess=null;
+            String[] parts=line.split(",",2); //Split into 2 parts  max using the csv delimiter ,
+            if (parts.length==1){
+                // no ID found
+                nameToProcess=parts[0].trim();
+                originalName=nameToProcess;
+                System.out.println("Main: No ID found for line "+lineNumber+" : "+nameToProcess);
+            } else {
+                String potentialId=parts[0].trim();
+                nameToProcess=parts[1].trim();
+                originalName=nameToProcess;
+                if(!potentialId.isBlank()){
+                    parsedId=potentialId;
+                    System.out.println("Main: ID found for line "+lineNumber+" : "+parsedId);
+                } else{
+                    System.out.println("Main: No ID found for line "+lineNumber+" : "+nameToProcess);
+                }
+            }
+            String finalId=(parsedId != null && !parsedId.isBlank())?parsedId:"L_"+lineNumber; //If ID found:good,else we set L_lineNumber as ID
+            //Actually process the name (we need a list as input so we wrap the string)
+            List<String> processedTokens=preprocessor.preprocess(List.of(nameToProcess));
+            //We create the name object and add it to the list to return
+            Name name=new Name(finalId,originalName,processedTokens);
+            processedNames.add(name);
+        }
+        System.out.println("Main:Finished loading and preprocessing. Created " + processedNames.size() + " Name objects.");
+        return processedNames;
     }
     // --- Data Loading Method (Instance Method) ---
 

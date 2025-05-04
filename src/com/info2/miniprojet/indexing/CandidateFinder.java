@@ -13,7 +13,7 @@ public interface CandidateFinder {
      * @param indexStructure The opaque index object created by a compatible IndexBuilder.
      * @return A list of integer indices corresponding to potential matches in the original list.
      */
-    List<Couple<Name>> findCandidates(Name queryName, List<Name> namesList, Object indexStructure); // IS INDEX NECESSARY??,null check?
+    List<Couple<Name>> findCandidates(Name queryName, List<Name> namesList, Object indexStructure); // TODO:IS INDEX NECESSARY??,null check?also not two lists?
 
     /**
      * Gets a user-friendly name for this strategy.

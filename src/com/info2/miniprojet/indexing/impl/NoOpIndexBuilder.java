@@ -1,16 +1,17 @@
 package com.info2.miniprojet.indexing.impl;
 
+import com.info2.miniprojet.core.Name;
 import com.info2.miniprojet.indexing.IndexBuilder;
 import java.util.List;
 
 public class NoOpIndexBuilder implements IndexBuilder {
 
     @Override
-    public Object buildIndex(List<List<String>> processedTokenLists) { //OBJECT: THIS IS A SKELETOOOOOON
+    public Object buildIndex(List<Name> names) { //OBJECT: THIS IS A SKELETOOOOOON(actually maybe not lmao)
         // Skeleton implementation: Does no actual indexing,
         // but returns the SIZE of the input list.
         // This allows the lazy CandidateFinder to know how many indices to return.
-        int size = (processedTokenLists == null) ? 0 : processedTokenLists.size();
+        int size = (names == null) ? 0 : names.size();
         System.out.println("DEBUG: NoOpIndexBuilder.buildIndex called (returning size: " + size + ").");
         return size; // Return the number of items processed
     }
