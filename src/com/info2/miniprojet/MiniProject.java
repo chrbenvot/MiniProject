@@ -17,6 +17,7 @@ import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.Name;
 import com.info2.miniprojet.factory.StrategyFactory;
 import com.info2.miniprojet.preprocessing.Preprocessor;
+import com.info2.miniprojet.data.*;
 
 
 public class MiniProject {
@@ -82,8 +83,8 @@ public class MiniProject {
         return this.currentConfig;
     }
 
-    public List<Name> loadAndPreprocessData(String pathOrUrl) throws IOException, InterruptedException{ //for now we'll consider that ID's taken from the file can be null
-        System.out.println("Main: Starting data load and preprocess for:"+pathOrUrl);
+    public List<Name> loadAndPreprocessData(DataProvider dataProvider) throws IOException, InterruptedException{ //for now we'll consider that ID's taken from the file can be null
+        System.out.println("Main: Starting data load and preprocess for:"+dataProvider);
         // 1-Get the current preprocessor
         Configuration config = getCurrentConfig();
         String preprocessorChoice = config.getPreprocessorChoice();
@@ -91,7 +92,7 @@ public class MiniProject {
         System.out.println("Main: Preprocessing with "+preprocessor.getName());
 
         // 2- Load raw list of names
-        List<String> rawNames=loadRawData(pathOrUrl);
+        List<String> rawNames=loadRawData(dataProvider);
 
         // 3-Process each name and create a corresponding name object
         List<Name> processedNames=new ArrayList<>(rawNames.size());
@@ -135,40 +136,16 @@ public class MiniProject {
     // --- Data Loading Method (Instance Method) ---
 
     // Include InterruptedException since we'll probably use HttpClient
-    public List<String> loadRawData(String pathOrUrl) throws IOException , InterruptedException {
-        System.out.println("MiniProject: Loading data from " + pathOrUrl); // Debugging line
-        if (pathOrUrl == null || pathOrUrl.trim().isEmpty()) {
+    public List<String> loadRawData(DataProvider dataProvider) throws IOException , InterruptedException {
+        System.out.println("MiniProject: Loading data from " + dataProvider); // Debugging line
+        if (dataProvider == null ) {
             throw new IOException("Path or URL cannot be empty.");
         }
-
-        if (pathOrUrl.toLowerCase().startsWith("http://") || pathOrUrl.toLowerCase().startsWith("https://")) {
-            // Keep InterruptedException if loadFromUrl signature requires it,
-            // otherwise remove it from this method's throws clause too.
-            return loadFromUrl(pathOrUrl);
-        } else {
-            return loadFromFile(pathOrUrl);
-        }
-    }
-
-    private List<String> loadFromFile(String filePath) throws IOException {
-        Path path = Paths.get(filePath); // Use Paths.get
-        try {
-            System.out.println("MiniProject: Reading from file " + path.toAbsolutePath());
-            List<String> lines = Files.readAllLines(path); // Assumes default charset (UTF-8 usually)
-            System.out.println("MiniProject: Successfully read " + lines.size() + " lines from file.");
-            return lines;
-        } catch (NoSuchFileException e) {
-            System.err.println("Error: File not found at " + path.toAbsolutePath());
-            throw e; // Re-throw specific exception
-        } catch (IOException e) {
-            System.err.println("Error reading file " + path.toAbsolutePath() + ": " + e.getMessage());
-            throw e; // Re-throw general IO exception
-        }
+        return dataProvider.loadRawLines();
     }
 
     // Emptied URL loading method
-    // Remove InterruptedException if it's not expected to be thrown by future implementations
-    private List<String> loadFromUrl(String urlString) throws IOException /*, InterruptedException */ {
+    private List<String> loadFromUrl(String urlString) throws IOException , InterruptedException  {
         System.out.println("MiniProject: URL loading requested for: " + urlString);
         // Implementation removed - Placeholder
         throw new UnsupportedOperationException("URL loading not yet implemented.");
