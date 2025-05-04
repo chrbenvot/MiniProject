@@ -2,11 +2,9 @@ package com.info2.miniprojet.factory;
 
 // Preprocessing
 import com.info2.miniprojet.preprocessing.Preprocessor;
-import com.info2.miniprojet.preprocessing.impl.NoOpPreprocessor;
-import com.info2.miniprojet.preprocessing.impl.SimpleTokenizer;
-import com.info2.miniprojet.preprocessing.impl.LowercaseNormalizer;
-import com.info2.miniprojet.preprocessing.impl.AccentRemover;
-import com.info2.miniprojet.preprocessing.impl.PipelinePreprocessor;
+import com.info2.miniprojet.preprocessing.impl.*;
+import com.info2.miniprojet.encoding.Encoder;
+import com.info2.miniprojet.encoding.impl.*;
 
 // Indexing (CandidateFinder now handles indexing internally)
 import com.info2.miniprojet.indexing.CandidateFinder;
@@ -38,7 +36,10 @@ public class StrategyFactory {
             "LOWERCASE",
             "ACCENT_REMOVER",
             "PIPELINE:TOKENIZE,LOWERCASE", // Example pipeline choice
-            "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER" // Another example
+            "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER", // Another example
+            //TODO: configure this for better UI,mainly clarifying pipeline usage
+            "SOUNDEX_PREPROCESS",
+            "METAPHONE_PREPROCESS"
     ));
 
     public static final List<String> CANDIDATE_FINDER_CHOICES = Collections.unmodifiableList(Arrays.asList(
@@ -64,7 +65,7 @@ public class StrategyFactory {
     public static List<String> getAvailableCandidateFinderChoices() { return CANDIDATE_FINDER_CHOICES; }
     public static List<String> getAvailableNameComparatorChoices() { return NAME_COMPARATOR_CHOICES; }
     public static List<String> getAvailableStringComparatorChoices() { return STRING_COMPARATOR_CHOICES; }
-
+    // TODO: refactor to account for how namecomparators will actually work
 
     // --- Creation Methods ---
 
@@ -109,6 +110,10 @@ public class StrategyFactory {
             case "ACCENT_REMOVER":
                 return new AccentRemover();
             // Add cases for other single preprocessors here...
+            case "SOUNDEX_PREPROCESS":
+                return new PhoneticEncodingPreprocessor(new SoundexEncoder());
+            case "METAPHONE_PREPROCESS":
+                return new PhoneticEncodingPreprocessor(new MetaphoneEncoder());
             default:
                 System.err.println("Warning: Unknown Preprocessor choice '" + upperChoice + "', using NOOP.");
                 return new NoOpPreprocessor();
