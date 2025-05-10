@@ -9,22 +9,28 @@ public class SimpleTokenizer implements Preprocessor {
 		if(inputTokens == null || inputTokens.isEmpty()) {
 			return new ArrayList<>();
 		}
-		List<String> copiedtokens = new ArrayList<>(inputTokens);
-		List<String> output = new ArrayList<>();
-		for ( int i = 0 ; i < inputTokens.size() ; i++ ) {
-			String token = copiedtokens.get(i);
-			if(token == null || token.isEmpty()) {
-				output.add("") ;// Skip null or empty tokens
+		List<String> outputTokens = new ArrayList<>();
+		for (String rawString : inputTokens) {
+			if (rawString == null || rawString.trim().isEmpty()) {
+				outputTokens.add("");
 				continue;
 			}
-			// Example tokenization : split by spaces
-			String[] subTokens = token.split("\\s+");
+
+			// Regex to split by one or more occurrences of:
+			// \\s : whitespace
+			// -   : hyphen
+			// '   : apostrophe
+			// The [] creates a character class.
+			// The + means one or more occurrences of any character in the class.
+			String[] subTokens = rawString.trim().split("[\\s'-]+");
+
 			for (String subToken : subTokens) {
-				output.add(subToken);
-				
+				if (subToken != null && !subToken.isEmpty()) { // Avoid adding empty strings resulting from multiple delimiters
+					outputTokens.add(subToken);
+				}
 			}
 		}
-		return output; 
+		return outputTokens;
 	}
 
 	@Override
