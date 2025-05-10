@@ -14,10 +14,7 @@ import com.info2.miniprojet.indexing.impl.CartesianCandidateFinder;
 // Comparison
 import com.info2.miniprojet.comparison.NameComparator;
 import com.info2.miniprojet.comparison.StringComparator;
-import com.info2.miniprojet.comparison.impl.ExactMatchComparator;
-import com.info2.miniprojet.comparison.impl.PassThroughNameComparator;
-// import com.info2.miniprojet.comparison.impl.LevenshteinComparator;
-// import com.info2.miniprojet.comparison.impl.StructuredNameComparator;
+import com.info2.miniprojet.comparison.impl.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +46,10 @@ public class StrategyFactory {
     ));
 
     public static final List<String> NAME_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
-            "PASS_THROUGH_NAME" // Default, uses ExactMatchStringComparator internally
-            // "STRUCTURED_LEVENSHTEIN" // Add when StructuredNameComparator with Levenshtein is ready
+            "PASS_THROUGH_NAME", // Default, uses ExactMatchStringComparator internally
+            "POSITIONAL_WEIGHTED",
+            "BAG_OF_WORDS",
+            "JACCARD_TOKEN_SET"
     ));
 
     // This list might be used if a NameComparator allows choosing its internal StringComparator
@@ -66,7 +65,6 @@ public class StrategyFactory {
     public static List<String> getAvailableCandidateFinderChoices() { return CANDIDATE_FINDER_CHOICES; }
     public static List<String> getAvailableNameComparatorChoices() { return NAME_COMPARATOR_CHOICES; }
     public static List<String> getAvailableStringComparatorChoices() { return STRING_COMPARATOR_CHOICES; }
-    // TODO: refactor to account for how namecomparators will actually work
 
     // --- Creation Methods ---
 
@@ -152,10 +150,10 @@ public class StrategyFactory {
         switch (upperChoice) {
             case "EXACT_STRING":
                 return new ExactMatchComparator();
-            // case "LEVENSHTEIN":
-            //     return new LevenshteinComparator();
-            // case "JARO_WINKLER":
-            //     return new JaroWinklerComparator();
+            case "LEVENSHTEIN":
+                return new LevenshteinComparator();
+            case "JARO_WINKLER":
+                return new JarowinklerComparator();
             // Add other StringComparator implementations here
             default:
                 System.err.println("Warning: Unknown StringComparator choice '" + upperChoice + "', using ExactMatch.");
@@ -163,20 +161,43 @@ public class StrategyFactory {
         }
     }
 
-    public static NameComparator createNameComparator(String choice) {
+    public static NameComparator createNameComparator(String choice,String stringComparatorChoiceForInjection) {
         if (choice == null || choice.trim().isEmpty()) {
             choice = "PASS_THROUGH_NAME"; // Default
         }
+        if (stringComparatorChoiceForInjection == null || stringComparatorChoiceForInjection.trim().isEmpty()){
+            stringComparatorChoiceForInjection = "EXACT_STRING"; // Default if needed
+        }
         String upperChoice = choice.toUpperCase().trim();
-        System.out.println("StrategyFactory: Creating NameComparator for choice: " + upperChoice);
-
+        System.out.println("StrategyFactory: Creating NameComparator for choice: " + upperChoice+"' (possibly using StringComparator '" + stringComparatorChoiceForInjection+"')");
+        StringComparator injectedStringComp;
         switch (upperChoice) {
             case "PASS_THROUGH_NAME":
                 // PassThrough uses a specific StringComparator, e.g., ExactMatch by default
                 return new PassThroughNameComparator(createStringComparator("EXACT_STRING"));
-            // case "STRUCTURED_LEVENSHTEIN":
-            //     // Example: Structured comparator that uses Levenshtein
-            //     return new StructuredNameComparator(createStringComparator("LEVENSHTEIN"), 0.6, 0.4); // Example weights
+
+            case "POSITIONAL_WEIGHTED":
+                 injectedStringComp = createStringComparator(stringComparatorChoiceForInjection);
+                 double fnWeight = 0.4; double lnWeight = 0.5; double mnWeight = 0.1;
+                 return new PositionalWeightedNameComparator(injectedStringComp, fnWeight, lnWeight, mnWeight);
+            case "BAG_OF_WORDS":
+                 injectedStringComp = createStringComparator(stringComparatorChoiceForInjection);
+                 switch(stringComparatorChoiceForInjection){
+                     case "EXACT_STRING":
+                         return new BagOfWordsNameComparator(injectedStringComp,1);
+                     case "LEVENSHTEIN":
+                         return new BagOfWordsNameComparator(injectedStringComp,0.8);
+                     case "JARO_WINKLER":
+                         return new BagOfWordsNameComparator(injectedStringComp,0.85);
+                     default:
+                         System.err.println("Warning: Unknown StringComparator choice '" + stringComparatorChoiceForInjection + "', using ExactMatch.");
+                         return new BagOfWordsNameComparator(new ExactMatchComparator(),1);
+                 }
+
+            case "JACCARD_TOKEN_SET":
+                return new JaccardTokenNameComparator();
+
+
             // Add other NameComparator implementations here
             default:
                 System.err.println("Warning: Unknown NameComparator choice '" + upperChoice + "', using PassThrough with ExactMatch.");

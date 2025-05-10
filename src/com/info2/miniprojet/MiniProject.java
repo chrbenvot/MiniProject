@@ -62,6 +62,9 @@ public class MiniProject {
         saveConfig();
     }
 
+    public void setStringComparatorForNameCompChoice(String choice){
+        this.currentConfig.setStringComparatorForNameCompChoice(choice);
+    }
     public void setNameComparatorChoice(String nameComparatorChoice) {
         this.currentConfig.setNameComparatorChoice(nameComparatorChoice);
         saveConfig();
@@ -151,6 +154,7 @@ public class MiniProject {
             config.setPreprocessorChoice(props.getProperty("preprocessor", config.getPreprocessorChoice()));
             // config.setIndexBuilderChoice(props.getProperty("indexBuilder", config.getIndexBuilderChoice())); // Removed if no IndexBuilderChoice
             config.setCandidateFinderChoice(props.getProperty("candidateFinder", config.getCandidateFinderChoice()));
+            config.setStringComparatorForNameCompChoice(props.getProperty("stringComparatorForNameComp", config.getStringComparatorForNameCompChoice()));
             config.setNameComparatorChoice(props.getProperty("nameComparator", config.getNameComparatorChoice()));
             config.setResultThreshold(Double.parseDouble(props.getProperty("resultThreshold", String.valueOf(config.getResultThreshold()))));
             config.setMaxResults(Integer.parseInt(props.getProperty("maxResults", String.valueOf(config.getMaxResults()))));
@@ -169,6 +173,7 @@ public class MiniProject {
         props.setProperty("preprocessor", currentConfig.getPreprocessorChoice());
         // props.setProperty("indexBuilder", currentConfig.getIndexBuilderChoice()); // Removed if no IndexBuilderChoice
         props.setProperty("candidateFinder", currentConfig.getCandidateFinderChoice());
+        props.setProperty("stringComparatorForNameComp", currentConfig.getStringComparatorForNameCompChoice());
         props.setProperty("nameComparator", currentConfig.getNameComparatorChoice());
         props.setProperty("resultThreshold", String.valueOf(currentConfig.getResultThreshold()));
         props.setProperty("maxResults", String.valueOf(currentConfig.getMaxResults()));
@@ -187,6 +192,7 @@ public class MiniProject {
         config.setPreprocessorChoice("NOOP"); // Ensure these match StrategyFactory keys
         // config.setIndexBuilderChoice("NOOP_BUILDER"); // Removed if no IndexBuilderChoice
         config.setCandidateFinderChoice("CARTESIAN_FIND_ALL");
+        config.setStringComparatorForNameCompChoice("EXACT_STRING");
         config.setNameComparatorChoice("PASS_THROUGH_NAME");
         config.setResultThreshold(0.85);
         config.setMaxResults(20);

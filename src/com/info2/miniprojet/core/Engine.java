@@ -47,7 +47,7 @@ public class Engine {
         System.out.println("Engine: Starting Search for '" + rawQueryName + "' with " + namesList.size() + " names.");
 
         Preprocessor preprocessor = StrategyFactory.createPreprocessor(config.getPreprocessorChoice());
-        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice());
+        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
         // Ensure the right CandidateFinder is active and its index is prepared for namesList
         ensureCandidateFinder(config.getCandidateFinderChoice(), namesList);
@@ -84,7 +84,7 @@ public class Engine {
     public List<ComparisonResult> performComparison(List<Name> list1, List<Name> list2, Configuration config) {
         System.out.println("Engine: Starting Comparison between list1 (" + list1.size() + ") and list2 (" + list2.size() + ").");
 
-        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice());
+        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
         // Ensure the right CandidateFinder is active.
         // For comparison, we choose to index list2 and iterate through list1.
@@ -119,7 +119,7 @@ public class Engine {
     public List<ComparisonResult> performDeduplication(List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Deduplication for list of " + namesList.size() + " names.");
 
-        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice());
+        NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
         // Ensure the right CandidateFinder is active and its index is prepared for namesList
         ensureCandidateFinder(config.getCandidateFinderChoice(), namesList);

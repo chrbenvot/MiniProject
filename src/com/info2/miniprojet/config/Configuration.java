@@ -3,6 +3,7 @@ package com.info2.miniprojet.config;
 public class Configuration {
     private String preprocessorChoice;
     private String candidateFinderChoice;
+    private String stringComparatorForNameCompChoice; // Choice of StringComparator for NameComparators that use one
     private String nameComparatorChoice;
     private double resultThreshold;
     private int maxResults;
@@ -15,6 +16,7 @@ public class Configuration {
     public String getCandidateFinderChoice() {
         return candidateFinderChoice;
     }
+    public String getStringComparatorForNameCompChoice() { return stringComparatorForNameCompChoice;}
     public String getNameComparatorChoice() {
         return nameComparatorChoice;
     }
@@ -35,6 +37,9 @@ public class Configuration {
     public void setCandidateFinderChoice(String candidateFinderChoice) {
         this.candidateFinderChoice = candidateFinderChoice;
     }
+    public void setStringComparatorForNameCompChoice(String stringComparatorForNameCompChoice) {
+        this.stringComparatorForNameCompChoice = stringComparatorForNameCompChoice;
+    }
     public void setNameComparatorChoice(String nameComparatorChoice) {
         this.nameComparatorChoice = nameComparatorChoice;
     }
@@ -53,6 +58,7 @@ public class Configuration {
         return "Configuration{" +
                 "preprocessor='" + preprocessorChoice + '\'' +
                 ", candidateFinder='" + candidateFinderChoice + '\'' +
+                ", stringComparatorForNameComp='" + stringComparatorForNameCompChoice + '\'' +
                 ", nameComparator='" + nameComparatorChoice + '\'' +
                 ", threshold=" + resultThreshold +
                 ", maxResults=" + maxResults +
