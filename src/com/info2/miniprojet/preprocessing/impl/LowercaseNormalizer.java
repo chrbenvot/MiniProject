@@ -20,7 +20,7 @@ public class LowercaseNormalizer implements Preprocessor {
             if (token != null) {
                 lowercasedTokens.add(token.toLowerCase());
             } else {
-                lowercasedTokens.add(null); // Or skip, or add empty string depending on desired handling
+                continue; // Or skip, or add empty string depending on desired handling
             }
         }
         // System.out.println("DEBUG: LowercaseNormalizer output: " + lowercasedTokens);

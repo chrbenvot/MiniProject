@@ -35,6 +35,7 @@ public class StrategyFactory {
             "SOUNDEX_PREPROCESS",
             "METAPHONE_PREPROCESS",
             "NICKNAME_NORMALIZER",
+            "NICKNAME_NORMALIZER_V2",
             "PIPELINE"
     ));
 
@@ -116,6 +117,8 @@ public class StrategyFactory {
                 return new PhoneticEncodingPreprocessor(new MetaphoneEncoder());
             case "NICKNAME_NORMALIZER":
                 return new HypocorismNormalizerPreprocessor();
+            case "NICKNAME_NORMALIZER_V2":
+                return new HypocorismNormalizerV2Preprocessor();
             default:
                 System.err.println("Warning: Unknown Preprocessor choice '" + upperChoice + "', using NOOP.");
                 return new NoOpPreprocessor();
