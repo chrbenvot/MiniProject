@@ -58,7 +58,8 @@ public class StrategyFactory {
     public static final List<String> STRING_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
             "EXACT_STRING",
             "LEVENSHTEIN",
-            "JARO_WINKLER"
+            "JARO_WINKLER",
+            "KEYBOARD_DISTANCE"
     ));
 
     // --- Getter Methods for Choices (used by CLI) ---
@@ -159,6 +160,8 @@ public class StrategyFactory {
                 return new LevenshteinComparator();
             case "JARO_WINKLER":
                 return new JarowinklerComparator();
+            case "KEYBOARD_DISTANCE":
+                return new KeyboardDistanceComparator();
             // Add other StringComparator implementations here
             default:
                 System.err.println("Warning: Unknown StringComparator choice '" + upperChoice + "', using ExactMatch.");
