@@ -20,6 +20,7 @@ public class PassThroughNameComparator implements NameComparator {
     @Override
     public double calculateScore(Name name1, Name name2 ) {
         // Simple lazy implementation: join tokens back into strings and compare.
+        if(name1 == null || name2 == null) return 0.0;
         String joinedTokens1= String.join(" ",name1.processedTokens());
         String joinedTokens2= String.join(" ",name2.processedTokens());
         System.out.println(internalStringComparator.calculateScore(joinedTokens1, joinedTokens2));
