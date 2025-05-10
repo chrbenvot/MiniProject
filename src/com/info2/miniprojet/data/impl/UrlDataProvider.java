@@ -78,4 +78,8 @@ public class UrlDataProvider implements DataProvider {
         }
 
     }
+
+    public String getUrlString() {
+        return urlString;
+    }
 }

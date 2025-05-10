@@ -5,9 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -18,6 +16,7 @@ import com.info2.miniprojet.core.Name;
 import com.info2.miniprojet.factory.StrategyFactory; // Static methods will be used
 import com.info2.miniprojet.preprocessing.Preprocessor;
 import com.info2.miniprojet.data.*;
+import com.info2.miniprojet.data.impl.*;
 
 
 public class MiniProject {
@@ -25,6 +24,7 @@ public class MiniProject {
     private Engine engine;
     private Configuration currentConfig;
     private final String configFilePath;
+    private Map<String, List<Name>> dataCache;
 
     public MiniProject() {
         this.configFilePath = "app_config.properties";
@@ -34,6 +34,7 @@ public class MiniProject {
         // For now, let's assume Engine can use static factory calls too for simplicity.
         this.engine = new Engine(); // Engine will call StrategyFactory.create... internally
         this.cliHandler = new CliHandler(engine, this);
+        this.dataCache = new HashMap<>();
     }
 
     // ... (start method, config setters, getCurrentConfig are fine) ...
@@ -44,18 +45,14 @@ public class MiniProject {
     // --- Configuration Management Methods (Instance Methods) ---
 
     public void setPreprocessorChoice(String preprocessorChoice) {
+        if (this.currentConfig.getPreprocessorChoice() == null ||
+                !this.currentConfig.getPreprocessorChoice().equals(preprocessorChoice)) {
+            System.out.println("MiniProject: Preprocessor choice changed. Clearing data cache.");
+            this.dataCache.clear();
+        }
         this.currentConfig.setPreprocessorChoice(preprocessorChoice);
         saveConfig(); // Save after modification
     }
-
-    // IndexBuilder choice is now implicitly part of CandidateFinder logic or not directly chosen
-    // If you still want to configure some aspect of indexing related to a CandidateFinder,
-    // you might need a different configuration field or a more complex CandidateFinderChoice string.
-    // For now, removing setIndexBuilderChoice as IndexBuilder interface is removed.
-    // public void setIndexBuilderChoice(String indexBuilderChoice) {
-    //     this.currentConfig.setIndexBuilderChoice(indexBuilderChoice); // This field might be removed from Configuration DTO
-    //     saveConfig();
-    // }
 
     public void setCandidateFinderChoice(String candidateFinderChoice) {
         this.currentConfig.setCandidateFinderChoice(candidateFinderChoice);
@@ -93,29 +90,41 @@ public class MiniProject {
 
 
     public List<Name> loadAndPreprocessData(DataProvider dataProvider) throws IOException, InterruptedException {
-        System.out.println("MiniProject: Starting data load and preprocess using: " + dataProvider.getClass().getSimpleName());
+        String cacheKey = null;
+
+        // Determine cache key based on DataProvider type
+        // This requires LocalFileProvider and UrlDataProvider to have getters for their path/url.
+        if (dataProvider instanceof LocalFileProvider) {
+            cacheKey = ((LocalFileProvider) dataProvider).getFilePath(); // Assumes getter exists
+        } else if (dataProvider instanceof UrlDataProvider) {
+            cacheKey = ((UrlDataProvider) dataProvider).getUrlString();       // Assumes getter exists
+        }
+        // We will NOT cache CliInputProvider data as it's unique each time.
+
+        // --- Cache Check ---
+        if (cacheKey != null && this.dataCache.containsKey(cacheKey)) {
+            System.out.println("MiniProject: Returning cached and preprocessed data for: " + cacheKey);
+            return this.dataCache.get(cacheKey);
+        }
+        // --- End Cache Check ---
+
+        System.out.println("MiniProject: Starting fresh data load and preprocess using: " + dataProvider.getClass().getSimpleName() + (cacheKey != null ? " (" + cacheKey + ")" : " (Manual Input)"));
 
         String preprocessorChoice = this.currentConfig.getPreprocessorChoice();
-        // Call StrategyFactory statically
         Preprocessor preprocessor = StrategyFactory.createPreprocessor(preprocessorChoice);
         System.out.println("MiniProject: Preprocessing with " + preprocessor.getName());
 
         List<String> rawNames = dataProvider.loadRawLines();
-
         List<Name> processedNames = new ArrayList<>(rawNames.size());
         int lineNumber = 0;
 
         for (String line : rawNames) {
             lineNumber++;
-            if (line == null || line.isBlank()) {
-                System.out.println("MiniProject: Skipping empty or blank line at number " + lineNumber);
-                continue;
-            }
+            if (line == null || line.isBlank()) continue;
 
             String parsedId = null;
             String originalNameForRecord;
             String nameToProcess;
-
             String[] parts = line.split(",", 2);
             if (parts.length == 1) {
                 nameToProcess = parts[0].trim();
@@ -124,20 +133,24 @@ public class MiniProject {
                 String potentialId = parts[0].trim();
                 nameToProcess = parts[1].trim();
                 originalNameForRecord = nameToProcess;
-                if (!potentialId.isBlank()) {
-                    parsedId = potentialId;
-                }
+                if (!potentialId.isBlank()) parsedId = potentialId;
             }
-            if (nameToProcess.isEmpty()) {
-                System.out.println("MiniProject: Skipping line " + lineNumber + " because name part is empty after parsing ID.");
-                continue;
-            }
+            if (nameToProcess.isEmpty()) continue;
+
             String finalId = (parsedId != null && !parsedId.isBlank()) ? parsedId : "L_" + lineNumber;
             List<String> processedTokens = preprocessor.preprocess(List.of(nameToProcess));
             Name nameObject = new Name(finalId, originalNameForRecord, processedTokens);
             processedNames.add(nameObject);
         }
         System.out.println("MiniProject: Finished loading and preprocessing. Created " + processedNames.size() + " Name objects.");
+
+        // --- Store in Cache if a key was generated (i.e., not CliInputProvider) ---
+        if (cacheKey != null) {
+            this.dataCache.put(cacheKey, processedNames);
+            System.out.println("MiniProject: Data for " + cacheKey + " stored in cache.");
+        }
+        // --- End Store in Cache ---
+
         return processedNames;
     }
 

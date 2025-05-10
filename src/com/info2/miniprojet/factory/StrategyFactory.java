@@ -8,8 +8,7 @@ import com.info2.miniprojet.encoding.impl.*;
 
 // Indexing (CandidateFinder now handles indexing internally)
 import com.info2.miniprojet.indexing.CandidateFinder;
-import com.info2.miniprojet.indexing.impl.CartesianCandidateFinder;
-// import com.info2.miniprojet.indexing.impl.PhoneticCandidateFinder; // Example for future
+import com.info2.miniprojet.indexing.impl.*;
 
 // Comparison
 import com.info2.miniprojet.comparison.NameComparator;
@@ -41,8 +40,10 @@ public class StrategyFactory {
     ));
 
     public static final List<String> CANDIDATE_FINDER_CHOICES = Collections.unmodifiableList(Arrays.asList(
-            "CARTESIAN_FIND_ALL" // Default/Lazy
-            // "PHONETIC_FINDER" // Add when PhoneticCandidateFinder is implemented
+            "CARTESIAN_FIND_ALL", // Default/Lazy
+            "DICTIONARY_LAST_TOKEN",
+            "TRIE_FINDER",
+            "REDBLACKTREE_FINDER"
     ));
 
     public static final List<String> NAME_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
@@ -131,8 +132,12 @@ public class StrategyFactory {
         switch (upperChoice) {
             case "CARTESIAN_FIND_ALL":
                 return new CartesianCandidateFinder();
-            // case "PHONETIC_FINDER":
-            //     return new PhoneticCandidateFinder();
+            case "DICTIONARY_LAST_TOKEN":
+                return new DictionaryCandidateFinder();
+            case "TRIE_FINDER":
+                 return new TrieCandidateFinder();
+            case "REDBLACKTREE_FINDER":
+                return new RedBlackTreeCandidateFinder();
             // Add other CandidateFinder implementations here
             default:
                 System.err.println("Warning: Unknown CandidateFinder choice '" + upperChoice + "', using Cartesian.");
