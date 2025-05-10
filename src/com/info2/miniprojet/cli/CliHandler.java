@@ -1,25 +1,26 @@
 package com.info2.miniprojet.cli;
 
-import com.info2.miniprojet.MiniProject; // Your main application class
-import com.info2.miniprojet.config.Configuration; // To get config for engine
+import com.info2.miniprojet.MiniProject;
+import com.info2.miniprojet.config.Configuration;
 import com.info2.miniprojet.core.Engine;
 import com.info2.miniprojet.core.ComparisonResult;
 import com.info2.miniprojet.core.Name;
-import com.info2.miniprojet.data.DataProvider; // DataProvider interface
-import com.info2.miniprojet.factory.DataProviderFactory; // To create DataProvider instances
-import com.info2.miniprojet.factory.StrategyFactory;   // To get available strategy choices
+import com.info2.miniprojet.data.DataProvider;
+import com.info2.miniprojet.factory.DataProviderFactory;
+import com.info2.miniprojet.factory.StrategyFactory;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
-import java.io.IOException;
-import java.util.Arrays; // For checking if a choice needs a string comparator
+import java.util.ArrayList; // Needed for building pipeline stage list
+import java.util.Arrays;
+import java.util.stream.Collectors; // For joining pipeline names
 
 public class CliHandler {
     private Scanner scanner;
     private final Engine engine;
-    private final MiniProject app; // Reference to MiniProject
+    private final MiniProject app;
 
-    // Helper list of NameComparator types that require an internal StringComparator
     private static final List<String> NAME_COMPS_REQUIRING_STRING_COMP = Arrays.asList(
             "PASS_THROUGH_NAME",
             "POSITIONAL_WEIGHTED",
@@ -40,18 +41,10 @@ public class CliHandler {
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-                case "1":
-                    handleSearch();
-                    break;
-                case "2":
-                    handleCompare();
-                    break;
-                case "3":
-                    handleDeduplicate();
-                    break;
-                case "4":
-                    handleConfiguration();
-                    break;
+                case "1": handleSearch(); break;
+                case "2": handleCompare(); break;
+                case "3": handleDeduplicate(); break;
+                case "4": handleConfiguration(); break;
                 case "5":
                     System.out.println("Exiting application...");
                     scanner.close();
@@ -79,10 +72,8 @@ public class CliHandler {
             System.err.println("Error: Query name cannot be empty.");
             return;
         }
-
         DataProvider listProvider = getDataProvider("Enter data source for list (File path/URL or 'MANUAL'): ");
         if (listProvider == null) return;
-
         try {
             System.out.println("CLI: Loading and preprocessing data for search...");
             List<Name> namesList = app.loadAndPreprocessData(listProvider);
@@ -90,9 +81,7 @@ public class CliHandler {
                 System.out.println("CLI: Data loaded ("+ namesList.size() + " names). Calling engine...");
                 List<ComparisonResult> results = engine.performSearch(queryName, namesList, app.getCurrentConfig());
                 displayResults(results);
-            } else {
-                System.err.println("CLI: Failed to load or preprocess data.");
-            }
+            } else { System.err.println("CLI: Failed to load or preprocess data."); }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error during search data processing: " + e.getMessage());
         } catch (Exception e) {
@@ -103,27 +92,20 @@ public class CliHandler {
 
     private void handleCompare() {
         System.out.println("\n=== Name List Comparison ===");
-        System.out.println("Enter data source for first list:");
         DataProvider provider1 = getDataProvider("Data source 1 (File path/URL or 'MANUAL'): ");
         if (provider1 == null) return;
-
-        System.out.println("\nEnter data source for second list:");
         DataProvider provider2 = getDataProvider("Data source 2 (File path/URL or 'MANUAL'): ");
         if (provider2 == null) return;
-
         try {
             System.out.println("CLI: Loading and preprocessing list 1...");
             List<Name> list1 = app.loadAndPreprocessData(provider1);
             System.out.println("CLI: Loading and preprocessing list 2...");
             List<Name> list2 = app.loadAndPreprocessData(provider2);
-
             if (list1 != null && list2 != null) {
                 System.out.println("CLI: Data loaded. Calling engine for comparison...");
                 List<ComparisonResult> results = engine.performComparison(list1, list2, app.getCurrentConfig());
                 displayResults(results);
-            } else {
-                System.err.println("CLI: Failed to load or preprocess one or both lists.");
-            }
+            } else { System.err.println("CLI: Failed to load or preprocess one or both lists."); }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error during comparison data processing: " + e.getMessage());
         } catch (Exception e) {
@@ -136,7 +118,6 @@ public class CliHandler {
         System.out.println("\n=== Name List Deduplication ===");
         DataProvider listProvider = getDataProvider("Enter data source for list to deduplicate (File path/URL or 'MANUAL'): ");
         if (listProvider == null) return;
-
         try {
             System.out.println("CLI: Loading and preprocessing data for deduplication...");
             List<Name> namesList = app.loadAndPreprocessData(listProvider);
@@ -144,9 +125,7 @@ public class CliHandler {
                 System.out.println("CLI: Data loaded. Calling engine for deduplication...");
                 List<ComparisonResult> results = engine.performDeduplication(namesList, app.getCurrentConfig());
                 displayResults(results);
-            } else {
-                System.err.println("CLI: Failed to load or preprocess data.");
-            }
+            } else { System.err.println("CLI: Failed to load or preprocess data.");}
         } catch (IOException | InterruptedException e) {
             System.err.println("Error during deduplication data processing: " + e.getMessage());
         } catch (Exception e) {
@@ -159,37 +138,21 @@ public class CliHandler {
         boolean stayInConfigMenu = true;
         while(stayInConfigMenu) {
             System.out.println("\n=== Configuration Menu ===");
-            System.out.println("Current Config:\n" + app.getCurrentConfig().toString()); // Display current settings
+            System.out.println("Current Config:\n" + app.getCurrentConfig().toString());
             System.out.println("1. Choose Preprocessor");
             System.out.println("2. Choose Candidate Finder");
             System.out.println("3. Choose Name Comparator (and its internal String Comparator if applicable)");
             System.out.println("4. Set Result Filter (Threshold/Max Count)");
             System.out.println("5. Back to Main Menu");
             System.out.print("Enter your choice: ");
-
             String choice = scanner.nextLine().trim();
-
             switch (choice) {
-                case "1":
-                    listAndSetStrategy("Preprocessor", null); // No secondary choice needed
-                    break;
-                case "2":
-                    listAndSetStrategy("CandidateFinder", null); // No secondary choice needed
-                    break;
-                case "3":
-                    // For NameComparator, we first set the NameComparator type,
-                    // then potentially set the StringComparator it uses internally.
-                    listAndSetStrategy("NameComparator", "StringComparatorForNameComp");
-                    break;
-                case "4":
-                    configureResultFilter();
-                    break;
-                case "5":
-                    System.out.println("Returning to main menu...");
-                    stayInConfigMenu = false;
-                    break;
-                default:
-                    System.out.println("Invalid configuration choice. Please try again.");
+                case "1": listAndSetStrategy("Preprocessor", null); break;
+                case "2": listAndSetStrategy("CandidateFinder", null); break;
+                case "3": listAndSetStrategy("NameComparator", "StringComparatorForNameComp"); break;
+                case "4": configureResultFilter(); break;
+                case "5": stayInConfigMenu = false; System.out.println("Returning to main menu..."); break;
+                default: System.out.println("Invalid configuration choice. Please try again.");
             }
         }
     }
@@ -229,42 +192,30 @@ public class CliHandler {
             int choiceNum = Integer.parseInt(getInput("Enter choice number for " + strategyType + ": "));
             if (choiceNum > 0 && choiceNum <= choices.size()) {
                 String selectedPrimaryChoice = choices.get(choiceNum - 1);
-                // Set the primary strategy choice
-                switch (strategyType) {
-                    case "Preprocessor": app.setPreprocessorChoice(selectedPrimaryChoice); break;
-                    case "CandidateFinder": app.setCandidateFinderChoice(selectedPrimaryChoice); break;
-                    case "NameComparator": app.setNameComparatorChoice(selectedPrimaryChoice); break;
-                }
-                System.out.println(strategyType + " choice set to: " + selectedPrimaryChoice);
 
-                // If a secondary strategy type is specified AND the primary choice needs it
-                if (secondaryStrategyType != null && strategyType.equals("NameComparator") &&
-                        NAME_COMPS_REQUIRING_STRING_COMP.contains(selectedPrimaryChoice.toUpperCase())) {
-
-                    System.out.println("\n--- This Name Comparator uses an internal String Comparator ---");
-                    List<String> secondaryChoices = StrategyFactory.getAvailableStringComparatorChoices();
-                    String currentSecondaryChoice = currentFullConfig.getStringComparatorForNameCompChoice();
-
-                    System.out.println("Currently selected internal " + secondaryStrategyType + ": " + currentSecondaryChoice);
-                    for (int i = 0; i < secondaryChoices.size(); i++) {
-                        System.out.println((i + 1) + ". " + secondaryChoices.get(i));
+                // --- MODIFIED SECTION FOR PIPELINE ---
+                if (strategyType.equals("Preprocessor") && selectedPrimaryChoice.equalsIgnoreCase("PIPELINE")) { // Use constant
+                    String pipelineDefinition = buildPipelineFromUserInput();
+                    if (pipelineDefinition != null && !pipelineDefinition.equals("PIPELINE:")) { // Check if stages were actually added
+                        app.setPreprocessorChoice(pipelineDefinition);
+                        System.out.println(strategyType + " choice set to: " + pipelineDefinition);
+                    } else {
+                        System.out.println("Pipeline creation cancelled or no stages selected. Preprocessor choice unchanged.");
                     }
-                    System.out.println((secondaryChoices.size() + 1) + ". Cancel / Keep Current");
+                } else {
+                    // --- END MODIFIED SECTION ---
+                    // Existing logic for single strategy selection
+                    switch (strategyType) {
+                        case "Preprocessor": app.setPreprocessorChoice(selectedPrimaryChoice); break;
+                        case "CandidateFinder": app.setCandidateFinderChoice(selectedPrimaryChoice); break;
+                        case "NameComparator": app.setNameComparatorChoice(selectedPrimaryChoice); break;
+                    }
+                    System.out.println(strategyType + " choice set to: " + selectedPrimaryChoice);
 
-                    try {
-                        int secondaryChoiceNum = Integer.parseInt(getInput("Select internal " + secondaryStrategyType + " (number): "));
-                        if (secondaryChoiceNum > 0 && secondaryChoiceNum <= secondaryChoices.size()) {
-                            String selectedSecondaryChoice = secondaryChoices.get(secondaryChoiceNum - 1);
-                            // Set the secondary strategy choice (e.g., StringComparatorForNameComp)
-                            app.setStringComparatorForNameCompChoice(selectedSecondaryChoice);
-                            System.out.println("Internal " + secondaryStrategyType + " set to: " + selectedSecondaryChoice);
-                        } else if (secondaryChoiceNum == secondaryChoices.size() + 1) {
-                            System.out.println("Internal " + secondaryStrategyType + " selection cancelled/kept current.");
-                        }else {
-                            System.out.println("Invalid number for internal " + secondaryStrategyType + ".");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input for internal " + secondaryStrategyType + ". Please enter a number.");
+                    // Handle secondary choice for NameComparator
+                    if (strategyType.equals("NameComparator") &&
+                            NAME_COMPS_REQUIRING_STRING_COMP.contains(selectedPrimaryChoice.toUpperCase())) {
+                        listAndSetSecondaryStrategy("StringComparatorForNameComp");
                     }
                 }
 
@@ -278,36 +229,109 @@ public class CliHandler {
         }
     }
 
+    // --- NEW HELPER METHOD FOR BUILDING PIPELINE DEFINITION ---
+    private String buildPipelineFromUserInput() {
+        System.out.println("\n--- Building Preprocessor Pipeline ---");
+        List<String> availableStages = new ArrayList<>(StrategyFactory.getAvailablePreprocessorChoices());
+        // Remove "PIPELINE" itself from the list of selectable stages for the pipeline
+        availableStages.removeIf(s -> s.equalsIgnoreCase("PIPELINE"));
 
-    private void configureResultFilter() {
-        // ... (this method is already good) ...
-        System.out.println("\n--- Set Result Filter ---");
-        System.out.println("Filter results by: (1) Threshold or (2) Max Count?");
-        String modeChoice = getInput("Enter choice (1 or 2): ");
+        if (availableStages.isEmpty()) {
+            System.out.println("No individual preprocessor stages available to build a pipeline.");
+            return null;
+        }
 
-        if ("1".equals(modeChoice)) {
+        System.out.println("Available stages for pipeline (enter numbers, comma-separated, in desired order):");
+        for (int i = 0; i < availableStages.size(); i++) {
+            System.out.println((i + 1) + ". " + availableStages.get(i));
+        }
+        System.out.println((availableStages.size() + 1) + ". Finish and Build Pipeline (if stages selected)");
+        System.out.println((availableStages.size() + 2) + ". Cancel Pipeline Creation");
+
+
+        List<String> selectedStageNames = new ArrayList<>();
+        boolean buildingPipeline = true;
+        while(buildingPipeline) {
+            String stageIndicesStr = getInput("Enter stage number to add, or " + (availableStages.size() + 1) + " to finish, or " + (availableStages.size() + 2) + " to cancel: ");
             try {
-                double threshold = Double.parseDouble(getInput("Enter threshold value (e.g., 0.85): "));
-                app.setResultThreshold(threshold);
-                System.out.println("Result filtering set to threshold: " + threshold);
+                int stageChoiceNum = Integer.parseInt(stageIndicesStr.trim());
+                if (stageChoiceNum > 0 && stageChoiceNum <= availableStages.size()) {
+                    String chosenStage = availableStages.get(stageChoiceNum - 1);
+                    selectedStageNames.add(chosenStage);
+                    System.out.println("Added '" + chosenStage + "' to pipeline. Current pipeline: " + String.join(",", selectedStageNames));
+                } else if (stageChoiceNum == availableStages.size() + 1) { // Finish
+                    buildingPipeline = false;
+                } else if (stageChoiceNum == availableStages.size() + 2) { // Cancel
+                    System.out.println("Pipeline creation cancelled.");
+                    return null;
+                } else {
+                    System.out.println("Invalid stage number: " + stageChoiceNum);
+                }
             } catch (NumberFormatException e) {
-                System.err.println("Invalid number format for threshold.");
+                System.out.println("Invalid input, not a number: " + stageIndicesStr);
             }
-        } else if ("2".equals(modeChoice)) {
-            try {
-                int maxResults = Integer.parseInt(getInput("Enter max number of results: "));
-                app.setMaxResults(maxResults);
-                System.out.println("Result filtering set to max results: " + maxResults);
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid number format for max results.");
-            }
+        }
+
+
+        if (!selectedStageNames.isEmpty()) {
+            return "PIPELINE:" + String.join(",", selectedStageNames);
         } else {
-            System.out.println("Invalid mode choice.");
+            System.out.println("No stages selected for the pipeline.");
+            return null;
+        }
+    }
+    // --- END NEW HELPER METHOD ---
+
+    private void listAndSetSecondaryStrategy(String secondaryStrategyType) {
+        // ... (this method for StringComparatorForNameComp remains the same) ...
+        List<String> secondaryChoices = StrategyFactory.getAvailableStringComparatorChoices();
+        Configuration currentFullConfig = app.getCurrentConfig();
+        String currentSecondaryChoice = currentFullConfig.getStringComparatorForNameCompChoice();
+
+        System.out.println("\n--- This Name Comparator uses an internal " + secondaryStrategyType + " ---");
+        System.out.println("Currently selected internal " + secondaryStrategyType + ": " + currentSecondaryChoice);
+        for (int i = 0; i < secondaryChoices.size(); i++) {
+            System.out.println((i + 1) + ". " + secondaryChoices.get(i));
+        }
+        System.out.println((secondaryChoices.size() + 1) + ". Cancel / Keep Current");
+
+        try {
+            int secondaryChoiceNum = Integer.parseInt(getInput("Select internal " + secondaryStrategyType + " (number): "));
+            if (secondaryChoiceNum > 0 && secondaryChoiceNum <= secondaryChoices.size()) {
+                String selectedSecondaryChoice = secondaryChoices.get(secondaryChoiceNum - 1);
+                app.setStringComparatorForNameCompChoice(selectedSecondaryChoice);
+                System.out.println("Internal " + secondaryStrategyType + " set to: " + selectedSecondaryChoice);
+            } else if (secondaryChoiceNum == secondaryChoices.size() + 1) {
+                System.out.println("Internal " + secondaryStrategyType + " selection cancelled/kept current.");
+            }else {
+                System.out.println("Invalid number for internal " + secondaryStrategyType + ".");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input for internal " + secondaryStrategyType + ". Please enter a number.");
         }
     }
 
+
+    private void configureResultFilter() {
+        // ... (this method remains the same) ...
+        System.out.println("\n--- Set Result Filter ---");
+        System.out.println("Filter results by: (1) Threshold or (2) Max Count?");
+        String modeChoice = getInput("Enter choice (1 or 2): ");
+        if ("1".equals(modeChoice)) {
+            try {
+                double threshold = Double.parseDouble(getInput("Enter threshold value (e.g., 0.85): "));
+                app.setResultThreshold(threshold); System.out.println("Result filtering set to threshold: " + threshold);
+            } catch (NumberFormatException e) { System.err.println("Invalid number format for threshold."); }
+        } else if ("2".equals(modeChoice)) {
+            try {
+                int maxResults = Integer.parseInt(getInput("Enter max number of results: "));
+                app.setMaxResults(maxResults); System.out.println("Result filtering set to max results: " + maxResults);
+            } catch (NumberFormatException e) { System.err.println("Invalid number format for max results."); }
+        } else { System.out.println("Invalid mode choice."); }
+    }
+
     private void displayResults(List<ComparisonResult> results) {
-        // ... (this method is already good) ...
+        // ... (this method remains the same) ...
         if (results == null || results.isEmpty()) {
             System.out.println("\n--- No matches found or operation yielded no results. ---");
             return;
@@ -315,7 +339,6 @@ public class CliHandler {
         System.out.println("\n=== Results (" + results.size() + " found) ===");
         int count = 0;
         final int MAX_DISPLAY = 50;
-
         for (ComparisonResult result : results) {
             System.out.println(result);
             count++;

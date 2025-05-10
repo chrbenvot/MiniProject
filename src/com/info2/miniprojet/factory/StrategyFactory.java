@@ -31,12 +31,11 @@ public class StrategyFactory {
             "TOKENIZE",
             "LOWERCASE",
             "ACCENT_REMOVER",
-            "PIPELINE:TOKENIZE,LOWERCASE", // Example pipeline choice
             "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER", // Another example
-            //TODO: configure this for better UI,mainly clarifying pipeline usage
             "SOUNDEX_PREPROCESS",
             "METAPHONE_PREPROCESS",
-            "NICKNAME_NORMALIZER"
+            "NICKNAME_NORMALIZER",
+            "PIPELINE"
     ));
 
     public static final List<String> CANDIDATE_FINDER_CHOICES = Collections.unmodifiableList(Arrays.asList(
