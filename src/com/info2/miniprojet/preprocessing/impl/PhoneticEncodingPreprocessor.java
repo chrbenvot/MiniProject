@@ -22,8 +22,12 @@ public class PhoneticEncodingPreprocessor implements Preprocessor{
         }
         List<String> encodedTokens = new ArrayList<>();
         for (String token : inputTokens) {
-            encodedTokens.add(encoder.encode(token));
-        }
+            try{encodedTokens.add(encoder.encode(token));}catch (IllegalArgumentException e){
+                System.out.println("This encoder is unfortunately racist \uD83D\uDE14  and probably doesn't encode your language,assumedly Burmese here");
+                System.out.println("Or arabic, or any other language that doesn't use the latin alphabet");
+                System.out.println("I'm just going to count this token as empty");
+                encodedTokens.add(""); // Add empty string for unencodable tokens
+        }}
         return encodedTokens;
     }
     @Override

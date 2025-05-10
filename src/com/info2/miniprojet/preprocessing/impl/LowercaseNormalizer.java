@@ -1,22 +1,35 @@
 package com.info2.miniprojet.preprocessing.impl;
 
 import com.info2.miniprojet.preprocessing.Preprocessor;
-
 import java.util.List;
-import java.util.ArrayList; // For returning a new list
+import java.util.ArrayList;
+import java.util.stream.Collectors; // For a more concise way to process
 
-//TODO:actually implement
 public class LowercaseNormalizer implements Preprocessor {
 
     @Override
     public List<String> preprocess(List<String> inputTokens) {
-        System.out.println("DEBUG: LowercaseNormalizer.preprocess called (current: no-op). Input: " + inputTokens);
         if (inputTokens == null) {
-            return new ArrayList<>(); // Return empty list for null input
+            // System.out.println("DEBUG: LowercaseNormalizer received null input, returning empty list.");
+            return new ArrayList<>();
         }
-        // For the "do-nothing" skeleton, just return a copy of the input list.
-        // A real implementation would iterate and lowercase each token.
-        return new ArrayList<>(inputTokens);
+
+        // System.out.println("DEBUG: LowercaseNormalizer.preprocess called. Input: " + inputTokens);
+        List<String> lowercasedTokens = new ArrayList<>(inputTokens.size());
+        for (String token : inputTokens) {
+            if (token != null) {
+                lowercasedTokens.add(token.toLowerCase());
+            } else {
+                lowercasedTokens.add(null); // Or skip, or add empty string depending on desired handling
+            }
+        }
+        // System.out.println("DEBUG: LowercaseNormalizer output: " + lowercasedTokens);
+        return lowercasedTokens;
+
+        // Alternative using streams (more concise but same effect):
+        // return inputTokens.stream()
+        //                   .map(token -> token == null ? null : token.toLowerCase())
+        //                   .collect(Collectors.toList());
     }
 
     @Override

@@ -77,7 +77,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
         List<Couple<Name>> candidatePairs = new ArrayList<>();
         String queryKey = getKeyFromTokens(queryName.processedTokens());
-
         if (queryKey != null) {
             List<Integer> matchingIndices = this.lastNameIndex.get(queryKey);
             if (matchingIndices != null) {
