@@ -150,18 +150,25 @@ public class Engine {
     }
 
     // --- Filtering Logic ---
-    private List<ComparisonResult> filterAndSortResults(List<ComparisonResult> sortedMatches, Configuration config, boolean isDistance) {
-        // This method now assumes sortedMatches is ALREADY sorted appropriately
+    private List<ComparisonResult> filterAndSortResults(List<ComparisonResult> potentialMatches, Configuration config, boolean isDistance) {
+        // This method now assumes potentialMatches is ALREADY sorted appropriately
         // (e.g., higher score better if not distance, lower score better if distance)
         // For Comparable in ComparisonResult: if it sorts "higher score better", and you have a distance, you'd reverse the list.
         // Let's assume ComparisonResult.compareTo sorts higher score = "better" (comes first).
         // If isDistance is true, we need to reverse if default Comparable sorts by higher is better.
         // This part needs careful alignment with ComparisonResult.compareTo()
 
+        potentialMatches.sort((r1, r2) -> {
+            if (isDistance) {
+                return Double.compare(r1.score(), r2.score()); // Ascending for distance
+            } else {
+                return Double.compare(r2.score(), r1.score()); // Descending for similarity
+            }
+        });
         List<ComparisonResult> filteredResults = new ArrayList<>();
         if (config.isThresholdMode()) {
             double threshold = config.getResultThreshold();
-            for (ComparisonResult res : sortedMatches) {
+            for (ComparisonResult res : potentialMatches) {
                 if (isDistance) {
                     if (res.score() <= threshold) filteredResults.add(res);
                 } else {
@@ -170,8 +177,8 @@ public class Engine {
             }
         } else { // Max results mode
             int max = config.getMaxResults();
-            for (int i = 0; i < Math.min(max, sortedMatches.size()); i++) {
-                filteredResults.add(sortedMatches.get(i));
+            for (int i = 0; i < Math.min(max, potentialMatches.size()); i++) {
+                filteredResults.add(potentialMatches.get(i));
             }
         }
         System.out.println("Engine: Filtered results down to " + filteredResults.size());

@@ -1,6 +1,7 @@
 package com.info2.miniprojet.factory;
 
 // Preprocessing
+import com.info2.miniprojet.comparison.impl.AiNameComparator;
 import com.info2.miniprojet.preprocessing.Preprocessor;
 import com.info2.miniprojet.preprocessing.impl.NoOpPreprocessor;
 import com.info2.miniprojet.preprocessing.impl.SimpleTokenizer;
@@ -36,9 +37,7 @@ public class StrategyFactory {
             "NOOP",
             "TOKENIZE",
             "LOWERCASE",
-            "ACCENT_REMOVER",
-            "PIPELINE:TOKENIZE,LOWERCASE", // Example pipeline choice
-            "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER" // Another example
+            "ACCENT_REMOVER"
     ));
 
     public static final List<String> CANDIDATE_FINDER_CHOICES = Collections.unmodifiableList(Arrays.asList(
@@ -47,7 +46,8 @@ public class StrategyFactory {
     ));
 
     public static final List<String> NAME_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
-            "PASS_THROUGH_NAME" // Default, uses ExactMatchStringComparator internally
+            "PASS_THROUGH_NAME", // Default, uses ExactMatchStringComparator internally
+            "AI_CROSS_ENCODER"
             // "STRUCTURED_LEVENSHTEIN" // Add when StructuredNameComparator with Levenshtein is ready
     ));
 
@@ -170,6 +170,10 @@ public class StrategyFactory {
             //     // Example: Structured comparator that uses Levenshtein
             //     return new StructuredNameComparator(createStringComparator("LEVENSHTEIN"), 0.6, 0.4); // Example weights
             // Add other NameComparator implementations here
+            case "AI_CROSS_ENCODER":
+                // You might want to make the API URL configurable via Configuration DTO
+                // and pass it here from the Engine, or have a default in AiNameComparator.
+                return new AiNameComparator("http://127.0.0.1:5000/similarity");
             default:
                 System.err.println("Warning: Unknown NameComparator choice '" + upperChoice + "', using PassThrough with ExactMatch.");
                 return new PassThroughNameComparator(createStringComparator("EXACT_STRING"));
