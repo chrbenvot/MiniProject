@@ -1,7 +1,8 @@
-package com.info2.miniprojet.data;
+package com.info2.miniprojet.data.impl;
 
 
-import java.io.IOException; // For interface compatibility (unlikely to actually be thrown)
+import com.info2.miniprojet.data.DataProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ public class CliInputProvider implements DataProvider {
     }
 
     @Override
-    public List<String> loadRawLines() throws IOException, InterruptedException {
+    public List<String> loadRawLines() throws InterruptedException {
         List<String> lines = new ArrayList<>();
         System.out.println("\n--- Manual Name Input ---");
         System.out.println("Enter one name per line. Type '" + DONE_KEYWORD + "' (case-insensitive) when finished.");

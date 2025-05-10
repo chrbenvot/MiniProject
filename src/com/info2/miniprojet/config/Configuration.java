@@ -2,7 +2,6 @@ package com.info2.miniprojet.config;
 
 public class Configuration {
     private String preprocessorChoice;
-    private String indexBuilderChoice;
     private String candidateFinderChoice;
     private String nameComparatorChoice;
     private double resultThreshold;
@@ -12,9 +11,6 @@ public class Configuration {
     // --- Getters ---
     public String getPreprocessorChoice() {
         return preprocessorChoice;
-    }
-    public String getIndexBuilderChoice() {
-        return indexBuilderChoice;
     }
     public String getCandidateFinderChoice() {
         return candidateFinderChoice;
@@ -36,9 +32,6 @@ public class Configuration {
     public void setPreprocessorChoice(String preprocessorChoice) {
         this.preprocessorChoice = preprocessorChoice;
     }
-    public void setIndexBuilderChoice(String indexBuilderChoice) {
-        this.indexBuilderChoice = indexBuilderChoice;
-    }
     public void setCandidateFinderChoice(String candidateFinderChoice) {
         this.candidateFinderChoice = candidateFinderChoice;
     }
@@ -59,7 +52,6 @@ public class Configuration {
     public String toString() {
         return "Configuration{" +
                 "preprocessor='" + preprocessorChoice + '\'' +
-                ", indexBuilder='" + indexBuilderChoice + '\'' +
                 ", candidateFinder='" + candidateFinderChoice + '\'' +
                 ", nameComparator='" + nameComparatorChoice + '\'' +
                 ", threshold=" + resultThreshold +
