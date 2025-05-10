@@ -324,10 +324,22 @@ public class CliHandler {
             } catch (NumberFormatException e) { System.err.println("Invalid number format for threshold."); }
         } else if ("2".equals(modeChoice)) {
             try {
-                int maxResults = Integer.parseInt(getInput("Enter max number of results: "));
-                app.setMaxResults(maxResults); System.out.println("Result filtering set to max results: " + maxResults);
-            } catch (NumberFormatException e) { System.err.println("Invalid number format for max results."); }
-        } else { System.out.println("Invalid mode choice."); }
+                int maxResults = Integer.parseInt(getInput("Enter max number of results(or 0 for ALL): "));
+                if (maxResults < 0) { // Treat negative as 0 (all) or a specific sentinel if you prefer
+                    System.out.println("Interpreting negative input as 'show all'.");
+                    maxResults = 0; // Or use -1 as your specific sentinel
+                }
+                app.setMaxResults(maxResults); // MaxResults setter in Main
+                // Mode is set to false (not threshold) in Main's setMaxResults
+                if (maxResults == 0) {
+                    System.out.println("Result filtering set to show ALL results.");
+                } else {
+                    System.out.println("Result filtering set to max results: " + maxResults);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format for max results.");
+            }
+        }
     }
 
     private void displayResults(List<ComparisonResult> results) {
@@ -338,7 +350,7 @@ public class CliHandler {
         }
         System.out.println("\n=== Results (" + results.size() + " found) ===");
         int count = 0;
-        final int MAX_DISPLAY = 50;
+        final int MAX_DISPLAY = 700000;
         for (ComparisonResult result : results) {
             System.out.println(result);
             count++;

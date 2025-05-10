@@ -170,8 +170,13 @@ public class Engine {
             }
         } else { // Max results mode
             int max = config.getMaxResults();
-            for (int i = 0; i < Math.min(max, sortedMatches.size()); i++) {
-                filteredResults.add(sortedMatches.get(i));
+            if (max <= 0) { // Sentinel value for "show all" (assuming 0 or negative means all)
+                System.out.println("Engine: Max results set to show all. Returning " + sortedMatches.size() + " matches.");
+                return new ArrayList<>(sortedMatches); // Return all sorted matches (new list for safety)
+            } else {
+                for (int i = 0; i < Math.min(max, sortedMatches.size()); i++) {
+                    filteredResults.add(sortedMatches.get(i));
+                }
             }
         }
         System.out.println("Engine: Filtered results down to " + filteredResults.size());
