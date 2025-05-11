@@ -39,7 +39,8 @@ public class StrategyFactory {
             "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER", // Another example
             //TODO: configure this for better UI,mainly clarifying pipeline usage
             "SOUNDEX_PREPROCESS",
-            "METAPHONE_PREPROCESS"
+            "METAPHONE_PREPROCESS",
+            "NICKNAME_NORMALIZER"
     ));
 
     public static final List<String> CANDIDATE_FINDER_CHOICES = Collections.unmodifiableList(Arrays.asList(
@@ -55,9 +56,9 @@ public class StrategyFactory {
     // This list might be used if a NameComparator allows choosing its internal StringComparator
     // or if user could choose a StringComparator directly for some debug/simple mode.
     public static final List<String> STRING_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
-            "EXACT_STRING"
-            // "LEVENSHTEIN",
-            // "JARO_WINKLER"
+            "EXACT_STRING",
+            "LEVENSHTEIN",
+            "JARO_WINKLER"
     ));
 
     // --- Getter Methods for Choices (used by CLI) ---
@@ -114,6 +115,8 @@ public class StrategyFactory {
                 return new PhoneticEncodingPreprocessor(new SoundexEncoder());
             case "METAPHONE_PREPROCESS":
                 return new PhoneticEncodingPreprocessor(new MetaphoneEncoder());
+            case "NICKNAME_NORMALIZER":
+                return new HypocorismNormalizerPreprocessor();
             default:
                 System.err.println("Warning: Unknown Preprocessor choice '" + upperChoice + "', using NOOP.");
                 return new NoOpPreprocessor();
