@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.ProgressIndicator?>
+<BorderPane prefHeight="650.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.info2.miniprojet.gui.MainViewController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <top>
+        <VBox spacing="10.0">
+            <children>
+                <Label text="Name Matcher Application - GUI">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Separator prefWidth="200.0" />
+                <GridPane hgap="10" vgap="5">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="100.0" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="NEVER" />
+                    </columnConstraints>
+                    <children>
+                        <Label text="Query Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="queryNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                        <Label text="Data File/URL:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="filePathField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        <Button fx:id="browseButton" text="Browse..." onAction="#browseForFileAction" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                    </children>
+                </GridPane>
+                <Button fx:id="searchButton" text="Perform Search" onAction="#performSearchAction" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+            </children>
+            <padding>
+                <Insets bottom="10.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="5.0" BorderPane.alignment="CENTER">
+            <children>
+                <Separator prefWidth="200.0">
+                    <VBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                    </VBox.margin>
+                </Separator>
+                <Label text="Results:">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <ListView fx:id="resultsListView" VBox.vgrow="ALWAYS" />
+                <HBox fx:id="progressBox" alignment="CENTER_LEFT" spacing="5" visible="false">
+                    <children>
+                        <ProgressIndicator fx:id="activityIndicator" progress="-1.0" prefHeight="20" prefWidth="20"/>
+                        <Label fx:id="progressLabel" text="Processing..."/>
+                    </children>
+                    <padding><Insets top="5"/></padding>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <Label fx:id="statusLabel" text="Status: Initializing..." BorderPane.alignment="CENTER_LEFT">
+            <BorderPane.margin>
+                <Insets top="5.0" />
+            </BorderPane.margin>
+        </Label>
+    </bottom>
+</BorderPane>
