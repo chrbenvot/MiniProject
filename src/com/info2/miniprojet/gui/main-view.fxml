@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
+
 <?import javafx.scene.control.ProgressIndicator?>
 <BorderPane prefHeight="650.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.info2.miniprojet.gui.MainViewController">
     <padding>
@@ -27,6 +27,8 @@
                     </font>
                 </Label>
                 <Separator prefWidth="200.0" />
+
+                <Label text="Search Operation:" style="-fx-font-weight: bold;"/>
                 <GridPane hgap="10" vgap="5">
                     <columnConstraints>
                         <ColumnConstraints hgrow="NEVER" minWidth="100.0" />
@@ -38,11 +40,38 @@
                         <TextField fx:id="queryNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
 
                         <Label text="Data File/URL:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="filePathField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-                        <Button fx:id="browseButton" text="Browse..." onAction="#browseForFileAction" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                        <TextField fx:id="filePathField" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="File/URL for search list"/>
+                        <Button fx:id="browseButtonSearch" text="Browse..." onAction="#browseForFileSearchAction" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
                     </children>
                 </GridPane>
                 <Button fx:id="searchButton" text="Perform Search" onAction="#performSearchAction" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+
+                <Separator prefWidth="200.0" />
+                <Label text="Compare &amp; Deduplicate Operations:" style="-fx-font-weight: bold;"/>
+                <!-- Input fields for Compare -->
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="List 1 File/URL:" prefWidth="100"/>
+                    <TextField fx:id="compareFilePath1Field" HBox.hgrow="ALWAYS" promptText="File/URL for list 1"/>
+                    <Button fx:id="browseButtonCompare1" text="Browse..." onAction="#browseForCompareFile1Action"/>
+                </HBox>
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <Label text="List 2 File/URL:" prefWidth="100"/>
+                    <TextField fx:id="compareFilePath2Field" HBox.hgrow="ALWAYS" promptText="File/URL for list 2"/>
+                    <Button fx:id="browseButtonCompare2" text="Browse..." onAction="#browseForCompareFile2Action"/>
+                </HBox>
+                <Button fx:id="compareButton" text="Perform Compare Two Lists" onAction="#performCompareAction" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+
+                <!-- Input field for Deduplicate -->
+                <HBox spacing="5" alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;"> <!-- Added top padding -->
+                    <Label text="List to Dedupe:" prefWidth="100"/>
+                    <TextField fx:id="dedupeFilePathField" HBox.hgrow="ALWAYS" promptText="File/URL for list to deduplicate"/>
+                    <Button fx:id="browseButtonDedupe" text="Browse..." onAction="#browseForDedupeFileAction"/>
+                </HBox>
+                <Button fx:id="deduplicateButton" text="Perform Deduplicate List" onAction="#performDeduplicateAction" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+
+                <Separator prefWidth="200.0" />
+                <Button fx:id="configureButton" text="Open Configuration" onAction="#openConfigurationWindowAction" maxWidth="Infinity" style="-fx-font-size: 14px;"/>
+
             </children>
             <padding>
                 <Insets bottom="10.0" />
