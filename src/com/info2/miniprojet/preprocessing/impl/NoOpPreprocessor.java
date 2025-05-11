@@ -8,7 +8,9 @@ public class NoOpPreprocessor implements Preprocessor {
 
     @Override
     public List<String> preprocess(List<String> inputTokens) {
-        // Does nothing
+        if(inputTokens == null) {
+            return new ArrayList<>(); // Return an empty list if input is null
+        }
         return new ArrayList<>(inputTokens);
     }
 
