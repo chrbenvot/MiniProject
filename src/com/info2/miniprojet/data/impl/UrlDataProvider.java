@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class UrlDataProvider implements DataProvider {
     private final String urlString;
@@ -60,6 +61,11 @@ public class UrlDataProvider implements DataProvider {
                     }
                 }
                 System.out.println("UrlDataProvider: Successfully read " + lines.size() + " lines from URL.");
+                if (!lines.isEmpty()) {
+                    System.out.println("LocalFileProvider: Skipping header line: '" + lines.get(0) + "'");
+                    // Return a sublist that excludes the first line (the header)
+                    return lines.stream().skip(1).collect(Collectors.toList());
+                }
                 return lines;
             } else {
                 // Handle common error codes specifically if desired

@@ -8,6 +8,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LocalFileProvider implements DataProvider {
     private final String filePath;
@@ -24,6 +25,11 @@ public class LocalFileProvider implements DataProvider {
             System.out.println("LocalFileProvider: Reading from file " + path.toAbsolutePath());
             List<String> lines = Files.readAllLines(path); // Assumes default charset (UTF-8 usually)
             System.out.println("LocalFileProvider: Successfully read " + lines.size() + " lines from file.");
+            if (!lines.isEmpty()) {
+                System.out.println("LocalFileProvider: Skipping header line: '" + lines.get(0) + "'");
+                // Return a sublist that excludes the first line (the header)
+                return lines.stream().skip(1).collect(Collectors.toList());
+            }
             return lines;
         } catch (NoSuchFileException e) {
             System.err.println("Error: File not found at " + path.toAbsolutePath());
