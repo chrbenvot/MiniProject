@@ -37,4 +37,7 @@ public class LocalFileProvider implements DataProvider {
     public String toString() {
         return "LocalFileProvider(" + filePath + ")";
     }
+    public String getFilePath() {
+        return filePath;
+    }
 }
