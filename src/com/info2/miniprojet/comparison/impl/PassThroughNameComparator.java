@@ -22,6 +22,7 @@ public class PassThroughNameComparator implements NameComparator {
         // Simple lazy implementation: join tokens back into strings and compare.
         String joinedTokens1= String.join(" ",name1.processedTokens());
         String joinedTokens2= String.join(" ",name2.processedTokens());
+        System.out.println(internalStringComparator.calculateScore(joinedTokens1, joinedTokens2));
         return internalStringComparator.calculateScore(joinedTokens1, joinedTokens2);
     }
 
