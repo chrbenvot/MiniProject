@@ -16,7 +16,8 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.Priority?>
 
-<VBox prefWidth="500.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.info2.miniprojet.gui.ConfigViewController">
+<?import javafx.scene.control.ListView?>
+<VBox prefWidth="600.0" prefHeight="550.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.info2.miniprojet.gui.ConfigViewController">
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
     </padding>
@@ -33,39 +34,57 @@
                 <ColumnConstraints hgrow="ALWAYS" />
             </columnConstraints>
 
-            <Label text="Preprocessor Strategy:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-            <ComboBox fx:id="preprocessorComboBox" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+            <Label text="Preprocessor Strategy:" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" style="-fx-font-weight: bold;"/>
 
-            <Label text="Candidate Finder Strategy:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-            <ComboBox fx:id="candidateFinderComboBox" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+            <Label text="Mode:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="preprocessorModeComboBox" onAction="#onPreprocessorModeSelected" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Name Comparator Strategy:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-            <ComboBox fx:id="nameComparatorComboBox" onAction="#onNameComparatorSelected" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+            <!-- This HBox will contain pipeline building UI, only visible if "PIPELINE" mode is selected -->
+            <HBox fx:id="pipelineBuilderBox" spacing="10" visible="false" managed="false" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2" alignment="CENTER_LEFT">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Available Stages:"/>
+                    <ListView fx:id="availableStagesListView" prefHeight="100.0"/>
+                </VBox>
+                <VBox spacing="5" alignment="CENTER">
+                    <Button fx:id="addStageButton" text="&gt;&gt;" onAction="#addStageToPipelineAction"/>
+                    <Button fx:id="removeStageButton" text="&lt;&lt;" onAction="#removeStageFromPipelineAction"/>
+                    <Button fx:id="moveStageUpButton" text="Up" onAction="#moveStageUpAction"/>
+                    <Button fx:id="moveStageDownButton" text="Down" onAction="#moveStageDownAction"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="Selected Pipeline Stages (in order):"/>
+                    <ListView fx:id="selectedStagesListView" prefHeight="100.0"/>
+                </VBox>
+            </HBox>
 
-            <Label fx:id="stringComparatorLabel" text="Internal String Comparator:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-            <ComboBox fx:id="stringComparatorComboBox" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+            <!-- The rest of the GridPane (CandidateFinder, NameComparator, etc.) needs its GridPane.rowIndex adjusted -->
+            <!-- Example: CandidateFinder was rowIndex="1", now needs to be rowIndex="3" (or more if pipeline UI takes more rows) -->
 
-            <Label text="Result Filtering Mode:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-            <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
-                <fx:define>
-                    <ToggleGroup fx:id="resultModeToggleGroup" />
-                </fx:define>
+            <Label text="Candidate Finder Strategy:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+            <ComboBox fx:id="candidateFinderComboBox" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+            <Label text="Name Comparator Strategy:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+            <ComboBox fx:id="nameComparatorComboBox" onAction="#onNameComparatorSelected" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+            <Label fx:id="stringComparatorLabel" text="Internal String Comparator:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+            <ComboBox fx:id="stringComparatorComboBox" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+
+            <Label text="Result Filtering Mode:" GridPane.rowIndex="6" GridPane.columnIndex="0" />
+            <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
+                <!-- ToggleGroup and RadioButtons as before -->
+                <fx:define> <ToggleGroup fx:id="resultModeToggleGroup" /> </fx:define>
                 <RadioButton fx:id="thresholdModeRadio" text="Threshold" toggleGroup="$resultModeToggleGroup" onAction="#onResultModeChanged"/>
                 <RadioButton fx:id="maxResultsModeRadio" text="Max Results" toggleGroup="$resultModeToggleGroup" onAction="#onResultModeChanged"/>
             </HBox>
 
-            <Label fx:id="thresholdLabel" text="Similarity/Distance Threshold:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-            <Spinner fx:id="thresholdSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1">
-                <valueFactory>
-                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="0.0" max="100.0" initialValue="0.85" amountToStepBy="0.01" />
-                </valueFactory>
+            <Label fx:id="thresholdLabel" text="Similarity/Distance Threshold:" GridPane.rowIndex="7" GridPane.columnIndex="0" />
+            <Spinner fx:id="thresholdSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="7" GridPane.columnIndex="1">
+                <!-- ValueFactory as before -->
             </Spinner>
 
-            <Label fx:id="maxResultsLabel" text="Max Number of Results:" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-            <Spinner fx:id="maxResultsSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="6" GridPane.columnIndex="1">
-                <valueFactory>
-                    <SpinnerValueFactory.IntegerSpinnerValueFactory min="1" max="1000" initialValue="20" amountToStepBy="1" />
-                </valueFactory>
+            <Label fx:id="maxResultsLabel" text="Max Number of Results:" GridPane.rowIndex="8" GridPane.columnIndex="0" />
+            <Spinner fx:id="maxResultsSpinner" editable="true" maxWidth="Infinity" GridPane.rowIndex="8" GridPane.columnIndex="1">
+                <!-- ValueFactory as before -->
             </Spinner>
 
         </GridPane>
