@@ -46,6 +46,9 @@ public class Engine {
     public List<ComparisonResult> performSearch(String rawQueryName, List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Search for '" + rawQueryName + "' with " + namesList.size() + " names.");
 
+        //LOGGING statement for performance TODO: actually remove this
+        long startTime = System.currentTimeMillis();
+
         Preprocessor preprocessor = StrategyFactory.createPreprocessor(config.getPreprocessorChoice());
         NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
@@ -78,12 +81,17 @@ public class Engine {
         }
 
         Collections.sort(comparisonResults); // Assuming ComparisonResult implements Comparable
+        //LOGGING statement for performance TODO: actually remove this
+        long endTime = System.currentTimeMillis();
+        System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
         return filterAndSortResults(comparisonResults, config, nameComparator.isScoreDistance());
     }
 
     public List<ComparisonResult> performComparison(List<Name> list1, List<Name> list2, Configuration config) {
         System.out.println("Engine: Starting Comparison between list1 (" + list1.size() + ") and list2 (" + list2.size() + ").");
 
+        //LOGGING statement for performance TODO: actually remove this
+        long startTime = System.currentTimeMillis();
         NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
         // Ensure the right CandidateFinder is active.
@@ -113,12 +121,17 @@ public class Engine {
         }
 
         Collections.sort(comparisonResults);
+        //LOGGING statement for performance TODO: actually remove this
+        long endTime = System.currentTimeMillis();
+        System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
         return filterAndSortResults(comparisonResults, config, nameComparator.isScoreDistance());
     }
 
     public List<ComparisonResult> performDeduplication(List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Deduplication for list of " + namesList.size() + " names.");
 
+        //LOGGING statement for performance TODO: actually remove this
+        long startTime = System.currentTimeMillis();
         NameComparator nameComparator = StrategyFactory.createNameComparator(config.getNameComparatorChoice(), config.getStringComparatorForNameCompChoice());
 
         // Ensure the right CandidateFinder is active and its index is prepared for namesList
@@ -146,6 +159,9 @@ public class Engine {
         }
 
         Collections.sort(comparisonResults);
+        //LOGGING statement for performance TODO: actually remove this
+        long endTime = System.currentTimeMillis();
+        System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
         return filterAndSortResults(comparisonResults, config, nameComparator.isScoreDistance());
     }
 
