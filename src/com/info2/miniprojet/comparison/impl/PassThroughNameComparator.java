@@ -23,7 +23,6 @@ public class PassThroughNameComparator implements NameComparator {
         if(name1 == null || name2 == null) return 0.0;
         String joinedTokens1= String.join(" ",name1.processedTokens());
         String joinedTokens2= String.join(" ",name2.processedTokens());
-        System.out.println(internalStringComparator.calculateScore(joinedTokens1, joinedTokens2));
         return internalStringComparator.calculateScore(joinedTokens1, joinedTokens2);
     }
 
