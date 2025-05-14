@@ -180,7 +180,7 @@ public class StrategyFactory {
         switch (upperChoice) {
             case "PASS_THROUGH_NAME":
                 // PassThrough uses a specific StringComparator, e.g., ExactMatch by default
-                return new PassThroughNameComparator(createStringComparator("EXACT_STRING"));
+                return new PassThroughNameComparator(createStringComparator(stringComparatorChoiceForInjection));
 
             case "POSITIONAL_WEIGHTED":
                  injectedStringComp = createStringComparator(stringComparatorChoiceForInjection);

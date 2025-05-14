@@ -75,8 +75,15 @@ public class Engine {
                     nameComparator.getName()
             ));
         }
+        boolean isDistance=nameComparator.isScoreDistance();
 
-        Collections.sort(comparisonResults); // This is why comparisonResults implemented the Comparable interface
+        comparisonResults.sort((r1, r2) -> {
+            if (isDistance) {
+                return Double.compare(r1.score(), r2.score()); // Ascending for distance
+            } else {
+                return Double.compare(r2.score(), r1.score()); // Descending for similarity
+            }
+        }); // This is why comparisonResults implemented the Comparable interface
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
         System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
@@ -116,7 +123,15 @@ public class Engine {
             ));
         }
 
-        Collections.sort(comparisonResults);
+        boolean isDistance=nameComparator.isScoreDistance();
+
+        comparisonResults.sort((r1, r2) -> {
+            if (isDistance) {
+                return Double.compare(r1.score(), r2.score()); // Ascending for distance
+            } else {
+                return Double.compare(r2.score(), r1.score()); // Descending for similarity
+            }
+        });
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
         System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
@@ -154,7 +169,15 @@ public class Engine {
             ));
         }
 
-        Collections.sort(comparisonResults);
+        boolean isDistance=nameComparator.isScoreDistance();
+
+        comparisonResults.sort((r1, r2) -> {
+            if (isDistance) {
+                return Double.compare(r1.score(), r2.score()); // Ascending for distance
+            } else {
+                return Double.compare(r2.score(), r1.score()); // Descending for similarity
+            }
+        });
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
         System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
