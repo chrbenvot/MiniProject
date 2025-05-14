@@ -62,7 +62,7 @@ public class UrlDataProvider implements DataProvider {
                 }
                 System.out.println("UrlDataProvider: Successfully read " + lines.size() + " lines from URL.");
                 if (!lines.isEmpty()) {
-                    System.out.println("LocalFileProvider: Skipping header line: '" + lines.get(0) + "'");
+                    System.out.println("UrlDataProvider: Skipping header line: '" + lines.get(0) + "'");
                     // Return a sublist that excludes the first line (the header)
                     return lines.stream().skip(1).collect(Collectors.toList());
                 }
