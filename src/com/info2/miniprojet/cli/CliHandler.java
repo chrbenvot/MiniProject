@@ -338,9 +338,11 @@ public class CliHandler {
         }
         System.out.println("\n=== Results (" + results.size() + " found) ===");
         int count = 0;
-        final int MAX_DISPLAY = 700000;
+        final int MAX_DISPLAY = 50;
         for (ComparisonResult result : results) {
-            System.out.println(result);
+            if(result.score()>0) {
+                System.out.println(result);
+            }
             count++;
             if (count >= MAX_DISPLAY && results.size() > MAX_DISPLAY) {
                 System.out.println("... (display limited to first " + MAX_DISPLAY + " results of " + results.size() + ")");
