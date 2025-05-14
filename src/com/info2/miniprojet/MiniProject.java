@@ -54,6 +54,7 @@ public class MiniProject {
 
     public void setStringComparatorForNameCompChoice(String choice){
         this.currentConfig.setStringComparatorForNameCompChoice(choice);
+        saveConfig();
     }
     public void setNameComparatorChoice(String nameComparatorChoice) {
         this.currentConfig.setNameComparatorChoice(nameComparatorChoice);
