@@ -68,7 +68,9 @@ public class Engine {
             if (pair.first() == null || pair.second() == null) continue; // Robustness
             double score = nameComparator.calculateScore(pair.first(), pair.second());
             comparisonResults.add(new ComparisonResult(
+                    pair.first().id(),
                     pair.first().originalName(),
+                    pair.second().id(),
                     pair.second().originalName(),
                     score,
                     nameComparator.getName()
@@ -115,7 +117,9 @@ public class Engine {
             if (pair.first() == null || pair.second() == null) continue;
             double score = nameComparator.calculateScore(pair.first(), pair.second());
             comparisonResults.add(new ComparisonResult(
+                    pair.first().id(),
                     pair.first().originalName(),
+                    pair.second().id(),
                     pair.second().originalName(),
                     score,
                     nameComparator.getName()
@@ -161,7 +165,9 @@ public class Engine {
             if (pair.first() == null || pair.second() == null) continue;
             double score = nameComparator.calculateScore(pair.first(), pair.second());
             comparisonResults.add(new ComparisonResult(
+                    pair.first().id(),
                     pair.first().originalName(),
+                    pair.second().id(),
                     pair.second().originalName(),
                     score,
                     nameComparator.getName()
