@@ -20,9 +20,10 @@ public class SimpleTokenizer implements Preprocessor {
 			// \\s : whitespace
 			// -   : hyphen
 			// '   : apostrophe
+			// .   : dot,very common for middle names
 			// The [] creates a character class.
 			// The + means one or more occurrences of any character in the class.
-			String[] subTokens = rawString.trim().split("[\\s'-]+");
+			String[] subTokens = rawString.trim().split("[\\s.'-]+");
 
 			for (String subToken : subTokens) {
 				if (subToken != null && !subToken.isEmpty()) { // Avoid adding empty strings resulting from multiple delimiters
