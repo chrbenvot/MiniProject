@@ -106,7 +106,6 @@ public class TrieCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForSearch(Name queryName, List<Name> originalNamesList) {
-        System.out.println("DEBUG: TrieCandidateFinder.findCandidatesForSearch for query: " + queryName.originalName());
         if (queryName == null || this.root.children.isEmpty() || this.indexedListReference == null) {
             if (this.root.children.isEmpty()) System.err.println("Search Error (Trie): Index not built or empty. Call buildIndex() first.");
             return Collections.emptyList();
@@ -133,7 +132,6 @@ public class TrieCandidateFinder implements CandidateFinder {
     public List<Couple<Name>> findCandidatesForComparison(List<Name> listToIterate, List<Name> indexedOriginalList) {
         // Assumes 'indexedOriginalList' is the list that 'buildIndex' was called with (and its Trie is in this.root).
         // 'listToIterate' is the "other" list whose items will be used as queries.
-        System.out.println("DEBUG: TrieCandidateFinder.findCandidatesForComparison called.");
         if (listToIterate == null || this.root.children.isEmpty() || this.indexedListReference == null) {
             if (this.root.children.isEmpty()) System.err.println("Compare Error (Trie): Index not built on the second list. Call buildIndex() first.");
             return Collections.emptyList();
@@ -158,7 +156,6 @@ public class TrieCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForDeduplication(List<Name> originalNamesList) {
-        System.out.println("DEBUG: TrieCandidateFinder.findCandidatesForDeduplication called.");
         if (this.root.children.isEmpty() || this.indexedListReference == null) {
             if (this.root.children.isEmpty()) System.err.println("Dedupe Error (Trie): Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -209,7 +206,6 @@ public class TrieCandidateFinder implements CandidateFinder {
 
     @Override
     public void reset() {
-        System.out.println("DEBUG: TrieCandidateFinder.reset() called.");
         this.root = new TrieNode(); // Create a new empty Trie root
         this.indexedListReference = null;
     }

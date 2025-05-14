@@ -14,7 +14,6 @@ public class PhoneticEncodingPreprocessor implements Preprocessor{
 
     @Override
     public List<String> preprocess(List<String> inputTokens) {
-        System.out.println("DEBUG:"+this.getName()+".preprocess called . Input: " + inputTokens);
         if (inputTokens == null) {
             return new ArrayList<>(); // Return empty list for null input
         }

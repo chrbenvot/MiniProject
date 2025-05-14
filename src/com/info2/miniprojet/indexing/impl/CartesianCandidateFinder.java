@@ -37,7 +37,6 @@ public class CartesianCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForSearch(Name queryName, List<Name> originalNamesList) {
-        System.out.println("DEBUG: CartesianCandidateFinder.findCandidatesForSearch called.");
         if (queryName == null || this.indexedList == null || this.indexedList.isEmpty()) {
             if (this.indexedList == null) System.err.println("Search Error: Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -60,7 +59,6 @@ public class CartesianCandidateFinder implements CandidateFinder {
     public List<Couple<Name>> findCandidatesForComparison(List<Name> listToIterate, List<Name> indexedOriginalList) {
         // Assumes 'indexedOriginalList' IS THE LIST that 'buildIndex' was called with.
         // 'listToIterate' is the "other" list.
-        System.out.println("DEBUG: CartesianCandidateFinder.findCandidatesForComparison called.");
         if (listToIterate == null || this.indexedList == null || listToIterate.isEmpty() || this.indexedList.isEmpty()) {
             if (this.indexedList == null) System.err.println("Compare Error: Index not built on the second list. Call buildIndex() first.");
             return Collections.emptyList();
@@ -84,7 +82,6 @@ public class CartesianCandidateFinder implements CandidateFinder {
     @Override
     public List<Couple<Name>> findCandidatesForDeduplication(List<Name> originalNamesList) {
         // Assumes originalNamesList is the list that buildIndex was called with
-        System.out.println("DEBUG: CartesianCandidateFinder.findCandidatesForDeduplication called.");
         if (this.indexedList == null || this.indexedList.size() < 2) {
             if (this.indexedList == null) System.err.println("Dedupe Error: Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -112,7 +109,6 @@ public class CartesianCandidateFinder implements CandidateFinder {
 
     @Override
     public void reset() {
-        System.out.println("DEBUG: CartesianCandidateFinder.reset() called.");
         this.indexedList = null;
         this.listRefForCurrentIndex = null;
     }

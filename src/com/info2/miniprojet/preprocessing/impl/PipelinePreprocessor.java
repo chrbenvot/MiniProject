@@ -52,20 +52,16 @@ public class PipelinePreprocessor implements Preprocessor {
             return new ArrayList<>();
         }
 
-        System.out.println("DEBUG: PipelinePreprocessor processing input: " + inputTokens);
         List<String> currentTokens = new ArrayList<>(inputTokens); // Work on a copy
 
         for (int i = 0; i < stages.size(); i++) {
             Preprocessor stage = stages.get(i);
-            System.out.println("DEBUG: Pipeline applying stage " + (i + 1) + "/" + stages.size() + ": " + stage.getName());
             currentTokens = stage.preprocess(currentTokens); // Output of one becomes input to next
-            System.out.println("DEBUG: Pipeline after stage " + stage.getName() + ": " + currentTokens);
             if (currentTokens == null) { // A stage should not return null
                 System.err.println("ERROR: Preprocessor stage '" + stage.getName() + "' returned null. Aborting pipeline.");
                 return new ArrayList<>(); // Or throw an exception
             }
         }
-        System.out.println("DEBUG: PipelinePreprocessor finished. Output: " + currentTokens);
         return currentTokens; // Return the final processed list
     }
 

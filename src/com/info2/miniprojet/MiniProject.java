@@ -100,11 +100,8 @@ public class MiniProject {
             return this.dataCache.get(cacheKey);
         }
 
-        System.out.println("MiniProject: Starting fresh data load and preprocess using: " + dataProvider.getClass().getSimpleName() + (cacheKey != null ? " (" + cacheKey + ")" : " (Manual Input)"));
-
         String preprocessorChoice = this.currentConfig.getPreprocessorChoice();
         Preprocessor preprocessor = StrategyFactory.createPreprocessor(preprocessorChoice);
-        System.out.println("MiniProject: Preprocessing with " + preprocessor.getName());
 
         List<String> rawNames = dataProvider.loadRawLines();
         List<Name> processedNames = new ArrayList<>(rawNames.size());
@@ -134,12 +131,10 @@ public class MiniProject {
             Name nameObject = new Name(finalId, originalNameForRecord, processedTokens);
             processedNames.add(nameObject);
         }
-        System.out.println("MiniProject: Finished loading and preprocessing. Created " + processedNames.size() + " Name objects.");
 
         // --- Store in Cache if a key was generated (i.e., not CliInputProvider) ---
         if (cacheKey != null) {
             this.dataCache.put(cacheKey, processedNames);
-            System.out.println("MiniProject: Data for " + cacheKey + " stored in cache.");
         }
 
         return processedNames;

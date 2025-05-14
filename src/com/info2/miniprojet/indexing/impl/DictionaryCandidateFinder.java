@@ -44,7 +44,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
         this.indexedListReference = namesToIndex; // Store direct reference
         this.lastNameIndex = new HashMap<>();
 
-        System.out.println("DEBUG: DictionaryCandidateFinder.buildIndex starting for " + namesToIndex.size() + " names.");
         for (int i = 0; i < namesToIndex.size(); i++) {
             Name name = namesToIndex.get(i);
             if (name != null && name.processedTokens() != null) {
@@ -61,7 +60,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForSearch(Name queryName, List<Name> originalNamesList) {
-        System.out.println("DEBUG: DictionaryCandidateFinder.findCandidatesForSearch for query: " + queryName.originalName());
         if (queryName == null || this.lastNameIndex == null || this.lastNameIndex.isEmpty()) {
             if (this.lastNameIndex == null) System.err.println("Search Error (Dictionary): Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -99,7 +97,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
     public List<Couple<Name>> findCandidatesForComparison(List<Name> listToIterate, List<Name> indexedOriginalList) {
         // Assumes 'indexedOriginalList' is the list that 'buildIndex' was called with (and its index is in this.lastNameIndex).
         // 'listToIterate' is the "other" list whose items will be used as queries.
-        System.out.println("DEBUG: DictionaryCandidateFinder.findCandidatesForComparison called.");
         if (listToIterate == null || this.lastNameIndex == null || this.lastNameIndex.isEmpty() ) {
             if (this.lastNameIndex == null) System.err.println("Compare Error (Dictionary): Index not built on the second list. Call buildIndex() first.");
             return Collections.emptyList();
@@ -131,7 +128,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForDeduplication(List<Name> originalNamesList) {
-        System.out.println("DEBUG: DictionaryCandidateFinder.findCandidatesForDeduplication called.");
         if (this.lastNameIndex == null || this.lastNameIndex.isEmpty()) {
             if (this.lastNameIndex == null) System.err.println("Dedupe Error (Dictionary): Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -169,7 +165,6 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
     @Override
     public void reset() {
-        System.out.println("DEBUG: DictionaryCandidateFinder.reset() called.");
         this.lastNameIndex = null;
         this.indexedListReference = null;
     }

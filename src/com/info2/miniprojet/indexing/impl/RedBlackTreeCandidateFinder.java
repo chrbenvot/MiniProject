@@ -58,7 +58,6 @@ public class RedBlackTreeCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForSearch(Name queryName, List<Name> originalNamesList) {
-        System.out.println("DEBUG: RedBlackTreeCandidateFinder.findCandidatesForSearch for query: " + queryName.originalName());
         if (queryName == null || this.indexMap == null || this.indexMap.isEmpty() || this.indexedListReference == null) {
             if (this.indexMap == null) System.err.println("Search Error (RBTree): Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -90,7 +89,6 @@ public class RedBlackTreeCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForComparison(List<Name> listToIterate, List<Name> indexedOriginalList) {
-        System.out.println("DEBUG: RedBlackTreeCandidateFinder.findCandidatesForComparison called.");
         if (listToIterate == null || this.indexMap == null || this.indexMap.isEmpty() || this.indexedListReference == null) {
             if (this.indexMap == null) System.err.println("Compare Error (RBTree): Index not built (for indexedOriginalList). Call buildIndex() first.");
             return Collections.emptyList();
@@ -119,7 +117,6 @@ public class RedBlackTreeCandidateFinder implements CandidateFinder {
 
     @Override
     public List<Couple<Name>> findCandidatesForDeduplication(List<Name> originalNamesList) {
-        System.out.println("DEBUG: RedBlackTreeCandidateFinder.findCandidatesForDeduplication called.");
         if (this.indexMap == null || this.indexMap.isEmpty() || this.indexedListReference == null) {
             if (this.indexMap == null) System.err.println("Dedupe Error (RBTree): Index not built. Call buildIndex() first.");
             return Collections.emptyList();
@@ -157,7 +154,6 @@ public class RedBlackTreeCandidateFinder implements CandidateFinder {
 
     @Override
     public void reset() {
-        System.out.println("DEBUG: RedBlackTreeCandidateFinder.reset() called.");
         this.indexMap = new TreeMap<>(); // Initialize new empty TreeMap
         this.indexedListReference = null;
     }

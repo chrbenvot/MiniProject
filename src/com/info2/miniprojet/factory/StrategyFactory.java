@@ -73,7 +73,6 @@ public class StrategyFactory {
         }
         String upperChoice = choice.toUpperCase().trim();
 
-        System.out.println("StrategyFactory: Creating Preprocessor for choice: " + upperChoice);
 
         if (upperChoice.startsWith(PIPELINE_PREFIX)) {
             String stagesString = upperChoice.substring(PIPELINE_PREFIX.length());
@@ -126,7 +125,6 @@ public class StrategyFactory {
             choice = "CARTESIAN_FIND_ALL"; // Default
         }
         String upperChoice = choice.toUpperCase().trim();
-        System.out.println("StrategyFactory: Creating CandidateFinder for choice: " + upperChoice);
 
         switch (upperChoice) {
             case "CARTESIAN_FIND_ALL":
@@ -149,7 +147,6 @@ public class StrategyFactory {
             choice = "EXACT_STRING"; // Default
         }
         String upperChoice = choice.toUpperCase().trim();
-        System.out.println("StrategyFactory: Creating StringComparator for choice: " + upperChoice);
 
         switch (upperChoice) {
             case "EXACT_STRING":
@@ -175,7 +172,6 @@ public class StrategyFactory {
             stringComparatorChoiceForInjection = "EXACT_STRING"; // Default if needed
         }
         String upperChoice = choice.toUpperCase().trim();
-        System.out.println("StrategyFactory: Creating NameComparator for choice: " + upperChoice+"' (possibly using StringComparator '" + stringComparatorChoiceForInjection+"')");
         StringComparator injectedStringComp;
         switch (upperChoice) {
             case "PASS_THROUGH_NAME":

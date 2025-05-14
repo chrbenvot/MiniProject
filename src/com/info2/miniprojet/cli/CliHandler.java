@@ -74,7 +74,6 @@ public class CliHandler {
         DataProvider listProvider = getDataProvider("Enter data source for list (File path/URL or 'MANUAL'): ");
         if (listProvider == null) return;
         try {
-            System.out.println("CLI: Loading and preprocessing data for search...");
             List<Name> namesList = app.loadAndPreprocessData(listProvider);
             if (namesList != null) {
                 System.out.println("CLI: Data loaded ("+ namesList.size() + " names). Calling engine...");
@@ -96,12 +95,9 @@ public class CliHandler {
         DataProvider provider2 = getDataProvider("Data source 2 (File path/URL or 'MANUAL'): ");
         if (provider2 == null) return;
         try {
-            System.out.println("CLI: Loading and preprocessing list 1...");
             List<Name> list1 = app.loadAndPreprocessData(provider1);
-            System.out.println("CLI: Loading and preprocessing list 2...");
             List<Name> list2 = app.loadAndPreprocessData(provider2);
             if (list1 != null && list2 != null) {
-                System.out.println("CLI: Data loaded. Calling engine for comparison...");
                 List<ComparisonResult> results = engine.performComparison(list1, list2, app.getCurrentConfig());
                 displayResults(results);
             } else { System.err.println("CLI: Failed to load or preprocess one or both lists."); }
@@ -118,10 +114,8 @@ public class CliHandler {
         DataProvider listProvider = getDataProvider("Enter data source for list to deduplicate (File path/URL or 'MANUAL'): ");
         if (listProvider == null) return;
         try {
-            System.out.println("CLI: Loading and preprocessing data for deduplication...");
             List<Name> namesList = app.loadAndPreprocessData(listProvider);
             if (namesList != null) {
-                System.out.println("CLI: Data loaded. Calling engine for deduplication...");
                 List<ComparisonResult> results = engine.performDeduplication(namesList, app.getCurrentConfig());
                 displayResults(results);
             } else { System.err.println("CLI: Failed to load or preprocess data.");}

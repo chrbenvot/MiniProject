@@ -7,7 +7,6 @@ import com.info2.miniprojet.indexing.CandidateFinder;
 import com.info2.miniprojet.comparison.NameComparator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects; // For checking list equality reference
 
@@ -134,7 +133,7 @@ public class Engine {
         });
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
-        System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
+        System.out.println("Engine: Comparison completed in " + (endTime - startTime) + " ms.");
         return filterAndSortResults(comparisonResults, config, nameComparator.isScoreDistance());
     }
 
@@ -180,7 +179,7 @@ public class Engine {
         });
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
-        System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
+        System.out.println("Engine: Deduplication completed in " + (endTime - startTime) + " ms.");
         return filterAndSortResults(comparisonResults, config, nameComparator.isScoreDistance());
     }
 
@@ -191,7 +190,7 @@ public class Engine {
         // For Comparable in ComparisonResult: if it sorts "higher score better", and you have a distance, you'd reverse the list.
         // Let's assume ComparisonResult.compareTo sorts higher score = "better" (comes first).
         // If isDistance is true, we need to reverse if default Comparable sorts by higher is better.
-        // This part needs careful alignment with ComparisonResult.compareTo()
+        // (We ended up just reversing the list according to isDistance when called)
 
         List<ComparisonResult> filteredResults = new ArrayList<>();
         if (config.isThresholdMode()) {
