@@ -14,7 +14,6 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList; // Needed for building pipeline stage list
 import java.util.Arrays;
-import java.util.stream.Collectors; // For joining pipeline names
 
 public class CliHandler {
     private Scanner scanner;
@@ -203,7 +202,6 @@ public class CliHandler {
                         System.out.println("Pipeline creation cancelled or no stages selected. Preprocessor choice unchanged.");
                     }
                 } else {
-                    // --- END MODIFIED SECTION ---
                     // Existing logic for single strategy selection
                     switch (strategyType) {
                         case "Preprocessor": app.setPreprocessorChoice(selectedPrimaryChoice); break;
@@ -229,11 +227,10 @@ public class CliHandler {
         }
     }
 
-    // --- NEW HELPER METHOD FOR BUILDING PIPELINE DEFINITION ---
+    // --- HELPER METHOD FOR BUILDING PIPELINE DEFINITION ---
     private String buildPipelineFromUserInput() {
         System.out.println("\n--- Building Preprocessor Pipeline ---");
         List<String> availableStages = new ArrayList<>(StrategyFactory.getAvailablePreprocessorChoices());
-        // Remove "PIPELINE" itself from the list of selectable stages for the pipeline
         availableStages.removeIf(s -> s.equalsIgnoreCase("PIPELINE"));
 
         if (availableStages.isEmpty()) {
@@ -280,10 +277,9 @@ public class CliHandler {
             return null;
         }
     }
-    // --- END NEW HELPER METHOD ---
 
     private void listAndSetSecondaryStrategy(String secondaryStrategyType) {
-        // ... (this method for StringComparatorForNameComp remains the same) ...
+        // Originally part of the listAndSetStrategy method,but refactored,that's why the secondary is unused there
         List<String> secondaryChoices = StrategyFactory.getAvailableStringComparatorChoices();
         Configuration currentFullConfig = app.getCurrentConfig();
         String currentSecondaryChoice = currentFullConfig.getStringComparatorForNameCompChoice();
@@ -313,7 +309,6 @@ public class CliHandler {
 
 
     private void configureResultFilter() {
-        // ... (this method remains the same) ...
         System.out.println("\n--- Set Result Filter ---");
         System.out.println("Filter results by: (1) Threshold or (2) Max Count?");
         String modeChoice = getInput("Enter choice (1 or 2): ");
@@ -325,9 +320,9 @@ public class CliHandler {
         } else if ("2".equals(modeChoice)) {
             try {
                 int maxResults = Integer.parseInt(getInput("Enter max number of results(or 0 for ALL): "));
-                if (maxResults < 0) { // Treat negative as 0 (all) or a specific sentinel if you prefer
+                if (maxResults < 0) { // Treat negative as 0 (all)
                     System.out.println("Interpreting negative input as 'show all'.");
-                    maxResults = 0; // Or use -1 as your specific sentinel
+                    maxResults = 0;
                 }
                 app.setMaxResults(maxResults); // MaxResults setter in Main
                 // Mode is set to false (not threshold) in Main's setMaxResults
@@ -343,7 +338,6 @@ public class CliHandler {
     }
 
     private void displayResults(List<ComparisonResult> results) {
-        // ... (this method remains the same) ...
         if (results == null || results.isEmpty()) {
             System.out.println("\n--- No matches found or operation yielded no results. ---");
             return;

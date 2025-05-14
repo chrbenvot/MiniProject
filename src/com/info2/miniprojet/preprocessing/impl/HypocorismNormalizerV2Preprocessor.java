@@ -23,7 +23,7 @@ public class HypocorismNormalizerV2Preprocessor implements Preprocessor {
      */
     public HypocorismNormalizerV2Preprocessor() {
         // HARDCODED PATH - Change this to your actual CSV file path
-        this.mapFilePath = "corrected_nicknames.csv"; // Example: place in project root or provide full path
+        this.mapFilePath = "corrected_nicknames.csv";
         this.nicknameToCanonicalMap = loadNicknameMapFromFile(this.mapFilePath);
         System.out.println("DEBUG: HypocorismNormalizerV2 loaded " + this.nicknameToCanonicalMap.size() + " nickname mappings from " + this.mapFilePath);
     }
@@ -67,10 +67,6 @@ public class HypocorismNormalizerV2Preprocessor implements Preprocessor {
                         // If nickname already exists, the first one encountered wins (or log a warning)
                         if (!map.containsKey(nickname)) {
                             map.put(nickname, canonicalName);
-                        } else {
-                            // Optional: Log if a nickname is being overwritten or found multiple times
-                            // LOGGER.warning("Duplicate nickname '" + nickname + "' found at line " + lineNumber +
-                            //                ". Keeping first mapping to '" + map.get(nickname) + "'.");
                         }
                     } else {
                         LOGGER.warning("Skipping malformed line (empty nickname or canonical) at "
@@ -118,7 +114,7 @@ public class HypocorismNormalizerV2Preprocessor implements Preprocessor {
 
     @Override
     public String getName() {
-        return "NICKNAME_NORMALIZER_V2"; // Distinguish from any previous version
+        return "NICKNAME_NORMALIZER_V2"; // Distinguish from the previous version
     }
 
 }

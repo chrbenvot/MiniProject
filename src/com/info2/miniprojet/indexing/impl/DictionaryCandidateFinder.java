@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class DictionaryCandidateFinder implements CandidateFinder {
 
@@ -23,7 +22,7 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
     private String getKeyFromTokens(List<String> tokens) {
         if (tokens == null || tokens.isEmpty()) {
-            return null; // Or a special placeholder for empty/no last name
+            return null; // Or a special placeholder for empty/no last name maybe?
         }
         // Use the last token as the key
         String lastToken = tokens.get(tokens.size() - 1);
@@ -165,7 +164,7 @@ public class DictionaryCandidateFinder implements CandidateFinder {
 
     @Override
     public String getName() {
-        return "DICTIONARY_LAST_TOKEN"; // Or more general "DICTIONARY_FINDER" if keying logic is complex/configurable
+        return "DICTIONARY_LAST_TOKEN";
     }
 
     @Override

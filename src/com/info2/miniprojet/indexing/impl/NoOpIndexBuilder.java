@@ -3,7 +3,7 @@ package com.info2.miniprojet.indexing.impl;
 import com.info2.miniprojet.core.Name;
 import java.util.List;
 
-public class NoOpIndexBuilder  {
+public class NoOpIndexBuilder  { //Artifact of when IndexBuilder was its own interface,kept just in case
 
 
     public Object buildIndex(List<Name> names) { //OBJECT: THIS IS A SKELETOOOOOON(actually maybe not lmao)

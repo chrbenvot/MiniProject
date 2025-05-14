@@ -1,10 +1,6 @@
 package com.info2.miniprojet;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,15 +25,12 @@ public class MiniProject {
     public MiniProject() {
         this.configFilePath = "app_config.properties";
         this.currentConfig = loadConfig();
-        // Engine constructor might not need factory if Engine also uses static factory methods
-        // Or if Engine needs to be testable with a mock factory, then passing an instance is good.
-        // For now, let's assume Engine can use static factory calls too for simplicity.
-        this.engine = new Engine(); // Engine will call StrategyFactory.create... internally
+        this.engine = new Engine();
         this.cliHandler = new CliHandler(engine, this);
         this.dataCache = new HashMap<>();
     }
 
-    // ... (start method, config setters, getCurrentConfig are fine) ...
+
     public void start() {
         cliHandler.startMainMenuLoop();
     }
@@ -93,11 +86,10 @@ public class MiniProject {
         String cacheKey = null;
 
         // Determine cache key based on DataProvider type
-        // This requires LocalFileProvider and UrlDataProvider to have getters for their path/url.
         if (dataProvider instanceof LocalFileProvider) {
-            cacheKey = ((LocalFileProvider) dataProvider).getFilePath(); // Assumes getter exists
+            cacheKey = ((LocalFileProvider) dataProvider).getFilePath();
         } else if (dataProvider instanceof UrlDataProvider) {
-            cacheKey = ((UrlDataProvider) dataProvider).getUrlString();       // Assumes getter exists
+            cacheKey = ((UrlDataProvider) dataProvider).getUrlString();
         }
         // We will NOT cache CliInputProvider data as it's unique each time.
 
@@ -106,7 +98,6 @@ public class MiniProject {
             System.out.println("MiniProject: Returning cached and preprocessed data for: " + cacheKey);
             return this.dataCache.get(cacheKey);
         }
-        // --- End Cache Check ---
 
         System.out.println("MiniProject: Starting fresh data load and preprocess using: " + dataProvider.getClass().getSimpleName() + (cacheKey != null ? " (" + cacheKey + ")" : " (Manual Input)"));
 
@@ -149,13 +140,11 @@ public class MiniProject {
             this.dataCache.put(cacheKey, processedNames);
             System.out.println("MiniProject: Data for " + cacheKey + " stored in cache.");
         }
-        // --- End Store in Cache ---
 
         return processedNames;
     }
 
     // --- Configuration Persistence (Instance Methods) ---
-    // loadConfig, saveConfig, createDefaultConfig remain the same
 
     private Configuration loadConfig() {
         Properties props = new Properties();
@@ -165,7 +154,6 @@ public class MiniProject {
             System.out.println("MiniProject: Loaded configuration from " + configFilePath);
 
             config.setPreprocessorChoice(props.getProperty("preprocessor", config.getPreprocessorChoice()));
-            // config.setIndexBuilderChoice(props.getProperty("indexBuilder", config.getIndexBuilderChoice())); // Removed if no IndexBuilderChoice
             config.setCandidateFinderChoice(props.getProperty("candidateFinder", config.getCandidateFinderChoice()));
             config.setStringComparatorForNameCompChoice(props.getProperty("stringComparatorForNameComp", config.getStringComparatorForNameCompChoice()));
             config.setNameComparatorChoice(props.getProperty("nameComparator", config.getNameComparatorChoice()));
@@ -184,7 +172,6 @@ public class MiniProject {
     private void saveConfig() {
         Properties props = new Properties();
         props.setProperty("preprocessor", currentConfig.getPreprocessorChoice());
-        // props.setProperty("indexBuilder", currentConfig.getIndexBuilderChoice()); // Removed if no IndexBuilderChoice
         props.setProperty("candidateFinder", currentConfig.getCandidateFinderChoice());
         props.setProperty("stringComparatorForNameComp", currentConfig.getStringComparatorForNameCompChoice());
         props.setProperty("nameComparator", currentConfig.getNameComparatorChoice());
@@ -202,8 +189,7 @@ public class MiniProject {
 
     private Configuration createDefaultConfig() {
         Configuration config = new Configuration();
-        config.setPreprocessorChoice("NOOP"); // Ensure these match StrategyFactory keys
-        // config.setIndexBuilderChoice("NOOP_BUILDER"); // Removed if no IndexBuilderChoice
+        config.setPreprocessorChoice("NOOP");
         config.setCandidateFinderChoice("CARTESIAN_FIND_ALL");
         config.setStringComparatorForNameCompChoice("EXACT_STRING");
         config.setNameComparatorChoice("PASS_THROUGH_NAME");
@@ -224,8 +210,4 @@ public class MiniProject {
         return this.engine;
     }
 
-    // Remove getStrategyFactory() if Engine and CliHandler use static factory methods
-    // public StrategyFactory getStrategyFactory() {
-    //     return this.strategyFactory; // This field was removed
-    // }
 }

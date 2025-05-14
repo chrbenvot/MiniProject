@@ -152,7 +152,7 @@ public class RedBlackTreeCandidateFinder implements CandidateFinder {
 
     @Override
     public String getName() {
-        return "REDBLACKTREE_FINDER"; // Or "TREEMAP_FINDER"
+        return "REDBLACKTREE_FINDER";
     }
 
     @Override

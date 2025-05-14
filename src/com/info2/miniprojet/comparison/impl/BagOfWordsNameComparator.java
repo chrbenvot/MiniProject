@@ -6,8 +6,7 @@ import com.info2.miniprojet.core.Name;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
 
 public class BagOfWordsNameComparator implements NameComparator {
     private final StringComparator stringComparator;
@@ -77,7 +76,7 @@ public class BagOfWordsNameComparator implements NameComparator {
             }
         }
 
-        // Simple score: proportion of matched tokens (Dice-like or Jaccard-like on tokens)
+        // Simple score: proportion of matched tokens (Jaccard-like on tokens)
         if (tokens1.size() + tokens2.size() == 0) return 1.0; // Both empty
         return (2.0 * matches) / (tokens1.size() + tokens2.size());
     }

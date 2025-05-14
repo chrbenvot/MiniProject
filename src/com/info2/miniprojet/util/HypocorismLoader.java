@@ -1,9 +1,8 @@
 package com.info2.miniprojet.util;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files; // Using Files for simplicity if no error logging needed for close
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +39,6 @@ public class HypocorismLoader {
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
                 if (line.trim().isEmpty()) {
-                    // Optional: Log or mention skipped empty lines
-                    // LOGGER.info("Skipping empty line at: " + lineNumber);
                     continue;
                 }
 
@@ -105,7 +102,7 @@ public class HypocorismLoader {
         // Elizabeth,Liz,Beth,Lizzie,Betty
         // Liz,Lisa // Liz appears again, this won't override the first mapping to Elizabeth
 
-        String filePath = "/home/chrbenvot/IdeaProjects/MiniProjet/nicknames.csv"; // Make sure this file exists with sample data
+        String filePath = "/home/chrbenvot/IdeaProjects/MiniProjet/nicknames.csv"; // hard-coded
         Map<String, String> hypocorisms = loadNicknameToCanonicalMap(filePath);
 
         System.out.println("Loaded Hypocorisms (Nickname -> Canonical):");

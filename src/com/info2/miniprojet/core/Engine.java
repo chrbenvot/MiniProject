@@ -1,11 +1,10 @@
 package com.info2.miniprojet.core;
 
 import com.info2.miniprojet.config.Configuration;
-import com.info2.miniprojet.factory.StrategyFactory; // For static calls
+import com.info2.miniprojet.factory.StrategyFactory;
 import com.info2.miniprojet.preprocessing.Preprocessor;
 import com.info2.miniprojet.indexing.CandidateFinder;
 import com.info2.miniprojet.comparison.NameComparator;
-// Assuming Name, Couple, ComparisonResult are in this package or imported
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,8 +20,6 @@ public class Engine {
 
 
     public Engine() {
-        // Engine is now stateless regarding strategy instances at construction,
-        // but manages the CandidateFinder instance and its indexed list state.
         this.currentCandidateFinder = null;
         this.lastCandidateFinderChoice = null;
     }
@@ -41,7 +38,6 @@ public class Engine {
     }
 
 
-    // --- Public API Methods ---
 
     public List<ComparisonResult> performSearch(String rawQueryName, List<Name> namesList, Configuration config) {
         System.out.println("Engine: Starting Search for '" + rawQueryName + "' with " + namesList.size() + " names.");
@@ -80,7 +76,7 @@ public class Engine {
             ));
         }
 
-        Collections.sort(comparisonResults); // Assuming ComparisonResult implements Comparable
+        Collections.sort(comparisonResults); // This is why comparisonResults implemented the Comparable interface
         //LOGGING statement for performance TODO: actually remove this
         long endTime = System.currentTimeMillis();
         System.out.println("Engine: Search completed in " + (endTime - startTime) + " ms.");
@@ -167,7 +163,7 @@ public class Engine {
 
     // --- Filtering Logic ---
     private List<ComparisonResult> filterAndSortResults(List<ComparisonResult> sortedMatches, Configuration config, boolean isDistance) {
-        // This method now assumes sortedMatches is ALREADY sorted appropriately
+        // This method assumes sortedMatches is ALREADY sorted appropriately
         // (e.g., higher score better if not distance, lower score better if distance)
         // For Comparable in ComparisonResult: if it sorts "higher score better", and you have a distance, you'd reverse the list.
         // Let's assume ComparisonResult.compareTo sorts higher score = "better" (comes first).

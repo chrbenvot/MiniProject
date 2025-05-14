@@ -1,6 +1,6 @@
 package com.info2.miniprojet.preprocessing.impl;
 
-import com.info2.miniprojet.preprocessing.Preprocessor; // The interface it implements
+import com.info2.miniprojet.preprocessing.Preprocessor;
 
 import java.util.List;
 import java.util.ArrayList;

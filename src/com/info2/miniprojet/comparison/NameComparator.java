@@ -2,7 +2,6 @@ package com.info2.miniprojet.comparison;
 
 import com.info2.miniprojet.core.Name;
 
-import java.util.List;
 
 public interface NameComparator {
     /**

@@ -1,7 +1,5 @@
 package com.info2.miniprojet.preprocessing.impl;
 import com.info2.miniprojet.preprocessing.Preprocessor;
-import com.info2.miniprojet.encoding.impl.MetaphoneEncoder;
-import com.info2.miniprojet.encoding.impl.SoundexEncoder;
 import com.info2.miniprojet.encoding.Encoder;
 
 import java.util.ArrayList;

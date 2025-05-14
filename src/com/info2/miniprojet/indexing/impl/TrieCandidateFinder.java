@@ -22,7 +22,7 @@ public class TrieCandidateFinder implements CandidateFinder {
 
     // --- Helper method to get the string key for the Trie from a Name object ---
     // For simplicity, we'll join all processed tokens.
-    // You could also choose to index only the first token, last token, etc.
+    // Potentially, we could also choose to index only the first token, last token, etc.
     private String getIndexKeyFromName(Name name) {
         if (name == null || name.processedTokens() == null || name.processedTokens().isEmpty()) {
             return null;

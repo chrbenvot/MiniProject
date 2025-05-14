@@ -20,10 +20,10 @@ public class LocalFileProvider implements DataProvider {
     }
     @Override
     public List<String> loadRawLines() throws IOException {
-        Path path = Paths.get(filePath); // Use Paths.get
+        Path path = Paths.get(filePath);
         try {
             System.out.println("LocalFileProvider: Reading from file " + path.toAbsolutePath());
-            List<String> lines = Files.readAllLines(path); // Assumes default charset (UTF-8 usually)
+            List<String> lines = Files.readAllLines(path);
             System.out.println("LocalFileProvider: Successfully read " + lines.size() + " lines from file.");
             if (!lines.isEmpty()) {
                 System.out.println("LocalFileProvider: Skipping header line: '" + lines.get(0) + "'");

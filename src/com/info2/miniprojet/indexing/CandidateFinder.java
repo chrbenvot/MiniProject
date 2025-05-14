@@ -13,6 +13,8 @@ public interface CandidateFinder {
      * if called multiple times with the exact same list instance or equivalent content
      * (implementation dependent: e.g., by storing a reference to the indexed list
      * or a hash of its content).
+     * I circumvented the problem of no super type for index building outputs by making it work purely through side-effects,
+     * and each implementation now manages its own index as a private attribute.
      *
      * @param namesToIndex The list of Name objects to build an index from.
      */

@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class CliInputProvider implements DataProvider {
 
     private final Scanner scanner;
-    private static final String DONE_KEYWORD = "DONE"; // Case-insensitive check below
+    private static final String DONE_KEYWORD = "DONE"; // Case-insensitive check below,this was when we though we'd add french support lul
 
     /**
      * Creates a provider that reads input from the specified Scanner.
@@ -47,9 +47,8 @@ public class CliInputProvider implements DataProvider {
                 count++;
             } else {
                 System.out.println("(Skipping empty input)");
-                // Optionally re-prompt without incrementing count if you want exactly N non-empty names
             }
-            // Check for potential interruption if running in a context where it matters
+            // Check for potential interruption
             if (Thread.interrupted()){ //through ctrl c for example
                 System.out.println("Manual input interrupted.");
                 throw new InterruptedException("Manual input was interrupted.");

@@ -42,13 +42,12 @@ public class PositionalWeightedNameComparator implements NameComparator {
                 int maxLength = Math.max(tokens1.get(0).length(), tokens2.get(0).length());
                 return maxLength == 0 ? 1.0 : Math.max(0, 1.0 - (score / maxLength));
             }
-            return score; // Assume already similarity
+            return score; // Assume Comparator already is a similarity score
         }
         // If one has 1 token and other has more, it's a partial match at best.
         // This heuristic might treat it as a low score or compare the single token against likely first/last.
         // For simplicity, if structures differ significantly (1 token vs 3+), we might score low or
         // try to match the single token against both first and last of the other.
-        // Let's go with a more structured approach below.
 
         // --- Component Identification ---
         String fn1 = "", ln1 = "", mn1_str = "";
@@ -119,13 +118,10 @@ public class PositionalWeightedNameComparator implements NameComparator {
             } else if (mn1_str.isEmpty() && mn2_str.isEmpty()) {
                 // No middle names to compare, weights are already correct
             } else {
-                // One has middle name, one doesn't - penalize slightly or give 0 for mnSim
+                // One has middle name, one doesn't
                 // For simplicity, we add 0 for mnSim if one is empty, totalWeight isn't increased
             }
         } else {
-            // Fallback for other mixed cases (e.g. 1 token vs 2 tokens not fully handled above)
-            // Could compare the single token of one name against the joined tokens of the other.
-            // For now, let's rely on the specific handling above.
             // If this path is reached, it means one list might be empty if initial checks fail.
             return 0.0; // Low similarity for completely different structures not caught
         }
@@ -133,7 +129,6 @@ public class PositionalWeightedNameComparator implements NameComparator {
 
         // Normalize score if totalWeight used is not 1.0 (and weights aren't pre-normalized)
         // Or ensure your weights (firstNameWeight, lastNameWeight, middleNameWeight) always sum to 1.0
-        // For this example, assuming weights are proportions.
         return (totalWeight > 0) ? Math.max(0, Math.min(combinedScore / totalWeight, 1.0)) : 0.0;
     }
 

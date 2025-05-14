@@ -3,10 +3,9 @@ package com.info2.miniprojet.factory;
 // Preprocessing
 import com.info2.miniprojet.preprocessing.Preprocessor;
 import com.info2.miniprojet.preprocessing.impl.*;
-import com.info2.miniprojet.encoding.Encoder;
 import com.info2.miniprojet.encoding.impl.*;
 
-// Indexing (CandidateFinder now handles indexing internally)
+// Indexing
 import com.info2.miniprojet.indexing.CandidateFinder;
 import com.info2.miniprojet.indexing.impl.*;
 
@@ -31,7 +30,6 @@ public class StrategyFactory {
             "TOKENIZE",
             "LOWERCASE",
             "ACCENT_REMOVER",
-            "PIPELINE:TOKENIZE,LOWERCASE,ACCENT_REMOVER", // Another example
             "SOUNDEX_PREPROCESS",
             "METAPHONE_PREPROCESS",
             "NICKNAME_NORMALIZER",
@@ -53,8 +51,7 @@ public class StrategyFactory {
             "JACCARD_TOKEN_SET"
     ));
 
-    // This list might be used if a NameComparator allows choosing its internal StringComparator
-    // or if user could choose a StringComparator directly for some debug/simple mode.
+    // This list is used to know if a NameComparator allows choosing its internal StringComparator
     public static final List<String> STRING_COMPARATOR_CHOICES = Collections.unmodifiableList(Arrays.asList(
             "EXACT_STRING",
             "LEVENSHTEIN",
@@ -110,7 +107,6 @@ public class StrategyFactory {
                 return new LowercaseNormalizer();
             case "ACCENT_REMOVER":
                 return new AccentRemover();
-            // Add cases for other single preprocessors here...
             case "SOUNDEX_PREPROCESS":
                 return new PhoneticEncodingPreprocessor(new SoundexEncoder());
             case "METAPHONE_PREPROCESS":
@@ -195,7 +191,7 @@ public class StrategyFactory {
                  switch(stringComparatorChoiceForInjection){
                      case "EXACT_STRING":
                          return new BagOfWordsNameComparator(injectedStringComp,1);
-                     case "LEVENSHTEIN":
+                     case "LEVENSHTEIN": //tbh 0.8 and 0.85 may as well be magic numbers here,I didn't test many different values
                          return new BagOfWordsNameComparator(injectedStringComp,0.8);
                      case "JARO_WINKLER":
                          return new BagOfWordsNameComparator(injectedStringComp,0.85);

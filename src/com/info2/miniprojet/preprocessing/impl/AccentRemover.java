@@ -3,11 +3,10 @@ package com.info2.miniprojet.preprocessing.impl;
 import com.info2.miniprojet.preprocessing.Preprocessor;
 
 import java.util.List;
-import java.util.ArrayList; // For returning a new list
+import java.util.ArrayList;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class AccentRemover implements Preprocessor {
 
